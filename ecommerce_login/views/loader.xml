@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="template_loader" name="template_loader">
+        <div id="modal_loader" name = "modal_loader" data-backdrop="static" style="z-index: 1700" class="modal fade show">
+            <div class="modal-dialog modal-sm center-screen">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <div class="loading-spinner mb-2"></div>
+                        <div>Loading</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>

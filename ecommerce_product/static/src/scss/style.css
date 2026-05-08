@@ -1,0 +1,28 @@
+body {
+    background-color: white;
+    font-family: "Roboto", sans-serif !important;
+    color: black;
+}
+
+
+#select-openpack {
+    width: auto;
+}
+
+#text-packsize>span{
+    font-weight: bolder;
+    margin-bottom: 0.5rem;
+}
+
+.css_attribute_color{
+  position: relative;
+  margin-left: 0.02em;
+  display: inline-block;
+  border: 1px solid #CED4DA;
+  border-radius: 50%;
+  text-align: center;
+  transition: background-color 0.05s ease-in-out, border-color 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
+ }
+ .swatches-color-btn {
+    background-color: grey ! important;
+ }

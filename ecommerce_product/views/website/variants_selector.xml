@@ -1,0 +1,34 @@
+<odoo>
+    <template id="variants_selector" inherit_id="sale.variants">
+        <xpath expr="//ul//t//li//strong" position="replace">
+            <t t-set="published_variants" t-value="ptal.product_tmpl_id.product_variant_ids.mapped('product_template_attribute_value_ids.name')" groups="base.group_user"/>
+            <t t-set="published_variants" t-value="ptal.product_tmpl_id.product_variant_ids.filtered(lambda x: x.is_published and x.qty_available >=0 ).mapped('product_template_attribute_value_ids.name')" groups="base.group_portal"/>
+            <strong t-if="published_variants" t-field="ptal.attribute_id.name" class="attribute_name"/>
+        </xpath>
+        <xpath expr="//t[@t-if][1]" position="replace">
+
+            <t t-if="ptal.attribute_id.display_type == 'select' and published_variants">
+                <select t-att-data-attribute_id="ptal.attribute_id.id"
+                        t-attf-class="form-select css_attribute_select o_wsale_product_attribute js_variant_change #{ptal.attribute_id.create_variant} #{'d-none' if single_and_custom else ''}"
+                        t-att-name="'ptal-%s' % ptal.id">
+                    <t t-foreach="ptal.product_template_value_ids._only_active()" t-as="ptav">
+
+                        <option t-if="ptav.name in published_variants" t-att-value="ptav.id"
+                                t-att-data-value_id="ptav.id" t-att-data-value_name="ptav.name"
+                                t-att-data-attribute_name="ptav.attribute_id.name" t-att-data-is_custom="ptav.is_custom"
+                                t-att-selected="ptav in combination" t-att-data-is_single="single"
+                                t-att-data-is_single_and_custom="single_and_custom">
+                            <!--<span t-field="product.product_variant_ids.search([('is_published', '==', 'True')]"/>-->
+
+                            <!--<span t-esc="published_variants"/>-->
+                            <span t-field="ptav.name"/>
+
+                            <t t-call="sale.badge_extra_price"/>
+                        </option>
+                    </t>
+                </select>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>

@@ -1,0 +1,77 @@
+<odoo>
+    <template id="products_custom" inherit_id="website_sale.products">
+
+        <xpath expr="//t[@t-call='website_sale.search']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+        <xpath expr="//t[@t-call='website_sale.pricelist_list']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+        <xpath expr="//t[@t-call='website_sale.sort']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+        <xpath expr="//t[@t-call='website_sale.add_grid_or_list_option']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+        <xpath expr="//div[@t-nocache='get the actual search']" position="replace">
+            <div t-nocache="get the actual search" t-else="" class="text-center text-muted mt128 mb256">
+                <t t-if="not search">
+                    <h3 class="mt8">No product defined</h3>
+                    <p t-if="category">No product defined in this category.</p>
+                </t>
+                <t t-else="">
+                    <h3 class="mt8">No results</h3>
+                    <p>No results for "<strong t-esc="search"/>"
+                        <t t-if="category">in category "<strong t-esc="category.display_name"/>"
+                        </t>
+                        .
+                    </p>
+                </t>
+                <p>Unfortunately, we don’t have any product that matches your search. Please, clear the current filter
+                    and try another search
+                </p>
+                <!--<p t-ignore="true" groups="sales_team.group_sale_manager">Click <i>'New'</i> in the top-right corner to create your first product.</p>-->
+            </div>
+
+
+        </xpath>
+
+        <xpath expr="//div[@id='products_grid']/t" position="after">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"/>
+
+            <t t-set="open_pack" t-value="env['open.pack'].sudo().search([])"/>
+            <t t-if="open_pack">
+                <span t-esc="openpack_set" class="d-none"/>
+                <div t-if="producttype_set == 3 and not user_id.partner_id.name == 'Public user'" class="row align-items-center">
+                    <div id="text-packsize" class="cold-md-2">
+                        <span>Please, select your pack size:</span>
+                    </div>
+                    <div class="col-md-3" >
+                        <select class="css_attribute_select mb-2" id="select-openpack" name="openpack">
+                            <t t-foreach="open_pack" t-as="op">
+                                <option t-att-value="'%s' % (op.id)" t-esc="op.name"
+                                        t-att-selected="op.id == openpack_set"/>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="col-md-9 d-flex justify-content-end align-items-center">
+                        <button id="o_add_to_Cart" name="button_add_to_cart" class="btn btn-primary swatches-color-btn"
+                                style="margin-right: 10px;border-radius: 10px; color: white;">
+                            Add to Cart
+                        </button>
+                        <!--                        <a role="button" id="add_to_cart" class="btn btn-primary btn-lg mt8 js_check_product a-submit" href="#">Add to Cart</a>-->
+                        <div id="packPrice" class="centered-element"></div>
+                    </div>
+
+                </div>
+                <div id="allProducts" class="mb-2">
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>

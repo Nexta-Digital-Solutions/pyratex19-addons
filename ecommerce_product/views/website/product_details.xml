@@ -1,0 +1,10 @@
+<odoo>
+    <template id="ecommerce_product.product_description_sale" inherit_id="website_sale.product">
+        <xpath expr = "//p[hasclass('my-2')]" position ="replace">
+           <t t-if="user_id.partner_id.name != 'Public user'">
+                <p t-field="product.description_sale" class="my-2" placeholder="A short description that will also appear on documents." />
+            </t>                
+        </xpath>
+
+    </template>
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="filmstrip_categories_category" inherit_id="website_sale.filmstrip_categories" name="Categories">
+        <xpath expr="//t[@name='Categories Filmstrip']" position="attributes">
+
+            <attribute name="t-if">1!=1</attribute>
+
+        </xpath>
+    </template>
+</odoo>

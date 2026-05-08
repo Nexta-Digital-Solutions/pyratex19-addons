@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_useropenpack_tree" model="ir.ui.view">
+            <field name="name">useropenpack.tree</field>
+            <field name="model">user.open.pack</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="user_id"  readonly="1"/>
+                    <field name="product_template_id" widget="many2many_tags"  readonly="1"/>
+                    <field name="pack_name_id" readonly="1"/>
+                    <field name = "date" readonly="1"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_useropenpack_tree" model="ir.actions.act_window">
+            <field name="name">User Open Pack</field>
+            <field name="res_model">user.open.pack</field>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="view_useropenpack_tree"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <template id="ecommerce_product.signup" inherit_id="auth_signup.login" name="portal_signup">
+            <!-- Reemplazar el link Signup -->
+            <xpath expr="//a[@t-if='signup_enabled']" position="replace">
+                <a t-if="signup_enabled" style = "font-size:large" t-attf-href="/web/signup?{{ keep_query() }}">Don't have an account?</a>
+            </xpath>
+
+            <!-- Reemplazar el link Reset Password -->
+            <xpath expr="//a[@t-if='reset_password_enabled']" position="replace">
+                <a t-if="reset_password_enabled" style = "font-size:large"  t-attf-href="/web/reset_password?{{ keep_query() }}">Reset Password</a>
+            </xpath>
+
+        </template>
+</odoo>

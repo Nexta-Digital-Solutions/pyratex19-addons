@@ -1,0 +1,25 @@
+<odoo>
+    <data>
+        <template id="account_invoice.report_invoice_document" inherit_id="account.report_invoice_document">
+          <xpath expr="//div[2]//div[hasclass('page')]//table[@name='invoice_line_table']//thead//tr//th[@name='th_subtotal']" position="replace">
+            <th name="th_subtotal" class="text-end">
+              <!-- NextaDS
+                <span groups="account.group_show_line_subtotals_tax_excluded">Amount</span>
+                <span groups="account.group_show_line_subtotals_tax_included">Total Price</span>
+              -->
+              <span>Total Price</span>
+            </th>
+          </xpath>
+
+          <xpath expr="//table[@name='invoice_line_table']//tbody//t[@t-foreach='lines_to_report']//td[hasclass('o_price_total')]" position="replace">
+            <td class="text-end o_price_total">
+              <!-- NextaDS
+                <span class="text-nowrap" t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                <span class="text-nowrap" t-field="line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+              -->
+              <span class="text-nowrap" t-field="line.price_subtotal"/>
+            </td>
+          </xpath> 
+        </template>
+    </data>
+</odoo>
