@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="product_attribute_view_form_custom" model="ir.ui.view">
+        <field name="name">product.attribute.view.form.custom</field>
+        <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_custom']" position="after">
+                <!--                <field name="icon_id" widget="image" options="{'size': [50, 50]}"/>-->
+                <field name="color_code" widget="color" invisible="1"/>
+                <field name="attribute_name" invisible="1"/>
+                <field name="colorgroup_id" invisible="attribute_name != 'Color'"/>
+            </xpath>
+            <xpath expr="//list/field[@name='html_color']" position="replace">
+                <field string="Color RGB" name="html_color"
+                       column_invisible="parent.display_type != 'Color' and parent.display_type != 'select'"
+                       widget="color"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

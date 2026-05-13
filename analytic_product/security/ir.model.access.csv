@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+analytic_product.access_product_template_analytic,access_product_template_analytic,analytic_product.model_product_template_analytic,base.group_user,1,1,1,1
+analytic_product.access_product_template_analytic_new,access_product_template_analytic_new,analytic_product.model_product_template_analytic_new,base.group_user,1,1,1,1

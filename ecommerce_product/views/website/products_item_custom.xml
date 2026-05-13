@@ -1,0 +1,72 @@
+<odoo>
+    <template id="products_item_custom" inherit_id="website_sale.products_item">
+        <xpath expr ="//form/div[2]/div[2][hasclass('o_wsale_product_sub')]" position = "attributes">
+            <attribute name="class" add="flex-column" separator=" "></attribute>
+        </xpath>
+        <xpath expr="//form/div/div[hasclass('o_wsale_product_information_text')]" position="replace">
+            <div class="o_wsale_product_information_text flex-grow-1 d-flex mr-1">
+                <h6 class="o_wsale_products_item_title mb-2" style = "font-size: small">
+                    <!--                    <strong>PYRATEX®</strong>-->
+                    <a class="text-primary text-decoration-none text-dark" itemprop="name" t-att-href="product_href"
+                       t-att-content="product.name" t-field="product.name"/>
+                    <a t-if="not product.website_published" role="button" t-att-href="product_href"
+                       class="btn btn-sm btn-danger" title="This product is unpublished.">
+                        Unpublished
+                    </a>
+                </h6>
+            </div>
+
+        </xpath>
+
+        <!--        <xpath expr="//div[hasclass('product_price')]" position="attributes">-->
+        <!--            <attribute name="t-if">1!=1</attribute>-->
+        <!--        </xpath>-->
+
+        <xpath expr="//div[hasclass('product_price')]" position="replace">
+            <!--Muestra los colores del producto-->
+            <div style="display:flex; flex-wrap:wrap; ">
+                <t t-foreach="product.product_variant_ids" t-as="variant">
+                    <div t-if="variant.is_published and variant.mapped('product_template_attribute_value_ids').html_color">
+                        <label t-attf-style="background-color:#{variant.mapped('product_template_attribute_value_ids').html_color}" t-attf-class="css_attribute_color">
+                            <input type="radio"/>
+                        </label>
+                    </div>
+                </t>
+            </div>
+
+            <!--Muestra el precio de los productos-->
+            <t t-set="has_price" t-value="template_price_vals['price_reduce'] > 0 if template_price_vals else False"/>
+            <div t-if="not user_id.partner_id.name == 'Public user' and product.producttype_id.name != 'Swatch' and has_price"
+                 class="product_price" itemprop="offers"
+                 itemscope="itemscope" itemtype="http://schema.org/Offer">
+                <!-- 
+                <t t-if="'base_price' in template_price_vals">
+                    <del t-attf-class="text-muted me-1 h6 mb-0" style="white-space: nowrap;">
+                        <em class="small" t-esc="template_price_vals['base_price']"
+                            t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                    </del>
+                </t>
+                -->
+                <span class="h6 mb-0" t-if="template_price_vals['price_reduce'] or not website.prevent_zero_price_sale"
+                      t-esc="template_price_vals['price_reduce']"
+                      t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                <span class="h6 mb-0" t-else="" t-field="website.prevent_zero_price_sale_text"/>
+                <span itemprop="price" style="display:none;" t-esc="template_price_vals['price_reduce']"/>
+                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                <span>/</span>
+                <span t-if="product.uom_id" t-field="product.uom_id"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//form" position="inside">
+            <div class="container">
+                <t t-if="product.producttype_id and product.producttype_id.name == 'Swatches'">
+                    <button id="o_add_to_the_pack" name="pack" class="btn btn-primary mr-2 w-100 swatches-color-btn"
+                            style="border-radius: 10px; color: white;"
+                            t-attf-data-product-id="{{product.id}}">Add to the Pack
+                    </button>
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>

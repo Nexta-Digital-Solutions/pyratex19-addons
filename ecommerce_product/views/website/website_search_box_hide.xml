@@ -1,0 +1,6 @@
+<odoo>
+    <template id="website_search_box_hide" inherit_id="website.website_search_box_input">
+        <xpath expr="//div[@role='search']" position="replace">
+        </xpath>
+    </template>
+</odoo>

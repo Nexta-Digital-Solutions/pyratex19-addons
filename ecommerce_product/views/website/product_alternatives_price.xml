@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+        <template id="website_sale.price_dynamic_filter_template_product_product" name="Dynamic Product Filter Price">
+            <t t-set="record_price" t-value="record._get_contextual_price_tax_selection()"/>
+            <t t-if="not website.prevent_zero_price_sale or record_price">
+                <t t-if = "user_id.partner_id.name != 'Public user'">
+                    <span t-esc="record_price" class="fw-bold"
+                        t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                    <del t-if="data.get('has_discounted_price')" class="text-danger ms-1 h6" style="white-space: nowrap;"
+                        t-esc="data['list_price']"
+                        t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                </t>
+            </t>
+            <t t-else="">
+                <span t-field="website.prevent_zero_price_sale_text"/>
+            </t>
+        </template>
+    </data>
+</odoo>  

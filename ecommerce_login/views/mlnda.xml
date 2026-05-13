@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="mldna" name="mldna">
+         <div class="modal fade show" style="z-index: 1600" id="modal_lnda" data-toogle="modal_lnda" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <div class="logo" style="padding-left:35%">
+                                <img src="/ecommerce_login/static/img/logo_pyratex.png"/>
+                              </div>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                          </div>
+                          <div class="modal-body">
+                            <div class="col-sd-6">
+                          <span>
+PYRATEX® is a start-up company which invests heavily in Research &amp; Development in order to bring innovative fiber solutions to the market as scalable high-quality fabrics, ready to be used by designers and brands. PYRATEX® products are based on various sources of creativity and specific expertises. 
+We often work with new brands, people from the industry who are launching new innovative projects and who confide in PYRATEX® to bring them to market.
+In order to protect our Intellectual Property and of our customers, we ask all potential clients to sign a confidentiality agreement, a formality that forms part of our commercial process. This Mutual Non-Disclosure Agreement (MNDA) protects both parties and allows for information to be shared freely. 
+
+Please view and sign the document below. Unfortunately we cannot accept any orders of swatches or stock without a signed MNDA. If you have any questions or concerns about the document, please contact legal@pyratexfabrics.com.
+</span>
+                            </div>
+                            <div class="col-sd-6">
+                            <span>
+                              This  Confideniali  Agreement  is made and entered into on {{ name }} {{ lastname }}, (the “E Da”) 
+BETWEEN 
+(1)  {{ name }} {{ lastname }} whose registered office is at {{ address1 }} - {{ postalcode }} - {{ city}} and
+
+( ) PYRATES  mar  fabric  SL whose registered office is at Paseo del General Martínez Campos 15, 3 izq., 28010 Madrid, Spain, with N.I.F. B-87987681.
+</span>
+</div>
+<div class="col-sd-6 mt-2">
+  <span><strong>WHEREAS</strong></span>
+</div>
+<div class="col-sd-6">
+  <span>
+  The Parties intend to enter into negotiations with regard to a possible future collaboration relating to the use of sustainable and innovative fabrics (the “P rpo e”), and have agreed to comply with this agreement in connection with the disclosure or delivery of documents, components, parts, information, drawings, data, sketches, specifications, techniques, processes, inventions, fabric/fibers/yarns/textile/product samples and other materials, material compositions of the goods, label s rules, technical specification, notes, summaries, etc., both written and oral, of a secret, confidential or proprietary nature, including without limitation any and all information relating to marketing, finance, forecasts, invention, research, any proprietary information, design, know-how, trademarks, trade secret, any supportive or incidental information, and any and all subject matter claimed in or disclosed by any patent application (the “C	         a  I	a       ”) in order to execute the Purpose.(B) In the course of discussing the Project, the Parties may disclose confidential information about their business and operation to each other. Therefore, the Parties have agreed to enter into this non-disclosure agreement (the “A	”) to set out the terms upon which the Party disclosing confidential information (“Dicloing Par”) is prepared to discuss the Project and disclose information to the Party receiving such confidential information (“Receiving Par ”).
+  </span>
+</div>
+<div class="col-sd-6 mt-2">
+<span><strong>NOW IT IS HEREBY AGREED as follows:</strong></span>
+<ol>
+  <li>The Parties for their mutual benefit and pursuant to a working relationship which has been or may be established, hereby agrees:</li>
+<ol type="i">
+  <li>
+  to hold the Confidential Information in strict confidence and to take all reasonable precautions to protect such Confidential Information;
+  </li>
+  <li>not to disclose any such Confidential Information or any information derived therefrom to any third person</li>
+  <li>not to make any use whatsoever at any time of such Confidential Information except to evaluate internally its relationship with the Disclosing Party</li>
+  <li>not to copy or reverse engineer any such Confidential Information</li>
+  <li>restrict access to the Confidential Information solely to those of its officers, employees or advisors having a need to know for the Purpose of this Agreement. The Parties shall procure that its employees, agents and sub-contractors to whom Confidential Information is disclosed or who have access to Confidential Information sign a nondisclosure or similar agreement in content substantially similar to this Agreement; and
+  notify the other Party promptly in writing in the event or suspected event of any loss or unauthorized disclosure of Confidential Information
+  </li>
+</ol>
+  <li>Each Party shall retain all right, title and interest to such Party s Confidential Information. Neither Party acquires any intellectual property rights, trade secret or any other rights or licenses under this Agreement, impliedly or otherwise, except for the limited right to use as set out in Section 1 above.</li>
+  <li>Upon written request by one of the Parties at any time, or once the Purpose of this Agreement has been reached, the Receiving Party will destroy or return to the Disclosing Party all Proprietary Information and all documents or samples containing any such Confidential Information and any and all copies or extracts, and cease the use the Confidential information.</li>
+  <span>. Upon the termination of this Agreement, all of the provisions of this Agreement shall cease to have effect after five (5) years following the Effective Date, save that the following provisions of this Agreement shall survive and continue to have effect relating to the rights and obligations of the Parties concerning the Confidential Information disclosed during the term of this Agreement.<br/></span>
+  <span>. It is understood and agreed by both Parties that in the event of a breach or threatened breach of the obligations assumed herein, the Receiving Party shall be entitled to pay the amount of, as stipulated damages from the Disclosing party, Ten Thousand Euros (EUR€10,000), without prejudice to recovery of further damages. Payment of such stipulated damages shall not relieve the Parties from observing its duties under this Agreement. This Section shall survive any termination of this Confidentiality Agreement.<br/></span>
+  <span>. This Agreement is governed by and will be construed in accordance with the laws of Spain. The courts of Madrid shall have jurisdiction.</span>
+ </ol>
+</div>
+
+  <div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">signed by</th>
+          <th scope="col"/>
+          <th scope="col">customer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><img src="/ecommerce_login/static/img/signature_pyratex.png" class="img-fluid sign-pyratex"/></td>
+          <td/>
+          <td>
+            <div class="flex-row">
+              <div class="wrapper">
+                <canvas id="blank" style="display:none"/>
+                <canvas id="signature-pad" name="signature-pad" width="400" height="200"/>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span>PYRATES  mar  fabric  S.L.<br/></span>
+            <span>Regina Polanco - CEO</span>
+          </td>
+          <td/>
+          <td><input id="position" name="position" type="text" placeholder="position*"/></td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="liveAlertPlaceholder"/>
+  </div>
+
+  </div>
+
+
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" id="modal_save" class="btn btn-secondary">Next</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.5/signature_pad.min.js" ></script> -->
+    
+    
+    </template>
+</odoo>

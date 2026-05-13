@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id = "default_display_attribute_website" model = "ir.default">
+        <field name = "field_id">2914</field>
+        <field name = "json_value">"select"</field>
+    </record>
+</odoo>

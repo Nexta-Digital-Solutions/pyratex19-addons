@@ -1,0 +1,206 @@
+<odoo>
+    <template id="product_properties_view_custom" inherit_id="website_sale.product">
+
+        <xpath expr="//div/h1[@itemprop='name']" position="after">
+            <p t-field="product.description_ecommerce"/>
+        </xpath>
+
+
+        <xpath expr="//p[hasclass('text-muted')]" position="after">
+            <div style="display: flex; flex-direction: row; flex-wrap: wrap;"
+                 t-if="user_id.partner_id.name != 'Public user'">
+                <div style="width: 20%;">
+                    <ul t-if="product.x_studio_weight &gt; 0.0" style="list-style: none;">
+                        <li>
+                            <strong>Weight</strong>
+                        </li>
+                        <p>
+                            <span t-field="product.x_studio_weight"/>
+                            <span>gsm</span>
+                        </p>
+                    </ul>
+                    <ul t-if="product.width &gt; 0.0" style="list-style: none;">
+                        <li>
+                            <strong>Width</strong>
+                        </li>
+                        <p>
+                            <span t-field="product.width"/>
+                            <span>cm</span>
+                        </p>
+                    </ul>
+                    <ul t-if="product.structure_id" style="list-style: none;">
+                        <li>
+                            <strong>Structure</strong>
+                        </li>
+                        <p t-field="product.structure_id"/>
+                    </ul>
+                    <br/>
+                    <ul t-if="product.composition_id" style="list-style: none;">
+                        <li>
+                            <strong>Composition</strong>
+                        </li>
+                        <div style="width: 350%;display:flex;justify-content: space-evenly;">
+                            <t t-if="product.composition_id">
+                                <t t-foreach="product.composition_id" t-as="composition">
+                                    <p t-field="composition.name" class="p-1"/>
+                                </t>
+                            </t>
+                        </div>
+                    </ul>
+
+                </div>
+                <div style="width: 50%;">
+                    <ul t-if="product.property_id" style="list-style: none;">
+                        <li>
+                            <strong>Properties</strong>
+                        </li>
+                        <div class="d-flex flex-wrap align-items-start">
+                                <t t-foreach="product.property_id" t-as="property">
+                                    <t t-if = "property.image">
+                                        <img t-att-src="image_data_uri(property.image)" style="width: 5%; height: 3%;"/>
+                                    </t>
+                                    <t>
+                                        <p t-field="property.name" class="p-1"/>
+                                    </t>
+                                </t>
+                        </div>
+                    </ul>
+                </div>
+                <div style="width: 25%; width: 25%; margin: 0 auto; text-align: center;">
+                    <t t-if="not user_id.partner_id.name == 'Public user'">
+                        <t t-if="product.certification_id">
+                            <t t-foreach="product.certification_id" t-as="certification">
+                                <img t-if="certification.image" class="p-1"
+                                     t-att-src="image_data_uri(certification.image)"/>
+                            </t>
+                        </t>
+                    </t>
+                </div>
+            </div>
+            <div t-else="">
+                <p>For more information, <a t-attf-href="/web/login">Sign in</a>.
+                </p>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <t t-if="not user_id.partner_id.name == 'Public user'">
+                        <t t-if="product.careinstructions_id">
+                            <div class="d-flex flex-wrap">
+                                <t t-foreach="product.careinstructions_id" t-as="care">
+                                    <t t-if="care.image">
+                                        <img class="p-1 w-25 h-auto" style="max-width: 50px; max-height: 50px;"
+                                             t-att-src="image_data_uri(care.image)"/>
+                                    </t>
+                                </t>
+                            </div>
+                        </t>
+                    </t>
+                    <h5 t-if="not user_id.partner_id.name == 'Public user' and product.country_id" class="text-primary">
+                        Made in
+                        <span t-field="product.country_id"/>
+                    </h5>
+                </div>
+            </div>
+        </xpath>
+        <!--No muestra el precio para usaurios que no se han dado de alta-->
+        <!--        <xpath expr="//form//div[hasclass('js_product')]//div" position="attributes">-->
+        <!--            <attribute name="t-if">"not user_id.partner_id.name == 'Public user'"</attribute>-->
+        <!--        </xpath>-->
+        <!--No muestra el precio-->
+        <!--        <xpath expr="//form/div/div/t" position="attributes">-->
+        <!--            <attribute name="t-if">1!=1</attribute>-->
+        <!--        </xpath>-->
+
+
+        <!--        Muestra un botón u otro según si es pack o no-->
+
+        <xpath expr="//a[@id='add_to_cart']" position="replace">
+            <t t-if = "product.producttype_id.name != 'Swatches'">
+                <a role="button" id="add_to_cart"
+                t-attf-class="btn btn-primary js_check_product a-submit flex-grow-1 #{'btn-lg' if ctaSizeBig else ''}"
+                href="#">
+                    <i class="fa fa-shopping-cart me-2"/>
+                    <span t-if="product.producttype_id.name != 'Swatches'" style="font-weight: bold">ADD TO CART</span>
+                    <!-- <span t-if="product.producttype_id.name == 'Swatches'" style="font-weight: bold">ADD SWATCH PACK TO THE
+                        CART
+                    </span> -->
+                </a>
+            </t>
+        </xpath>
+
+        <xpath expr = "//div[@id='o_wsale_cta_wrapper']" position = "attributes">
+            <attribute name="t-att-class">'hidden' if  product.producttype_id.name == "Swatches" else 'visible'</attribute> 
+        </xpath>
+       
+
+        <!--            <div t-foreach="product.product_variant_ids.mapped('product_template_attribute_value_ids')" t-as="variant">-->
+        <!--                <t t-if="variant.html_color">-->
+        <!--                    <label t-attf-style="background-color:#{variant.html_color}" t-attf-class="css_attribute_color">-->
+        <!--                        <input type="radio"/>-->
+        <!--                    </label>-->
+        <!--                </t>-->
+        <!--            </div>-->
+
+
+        <xpath expr="//t[@t-placeholder='select']" position="replace">
+            <t t-placeholder="select">
+                <input type="hidden" class="product_id" name="product_id" t-att-value="product_variant.id"/>
+                <input type="hidden" class="product_template_id" name="product_template_id" t-att-value="product.id"/>
+                <input t-if="product.public_categ_ids.ids" type="hidden" class="product_category_id"
+                       name="product_category_id" t-att-value="product.public_categ_ids.ids[0]"/>
+                <input t-if="product.product_tag_ids.ids" type="hidden" class="product_tag_id" name="product_tag_id"
+                       t-att-value="product.product_tag_ids.ids[0]"/>
+                <!--                <t t-if="combination" t-call="sale.variants">-->
+                <!--                    <t t-set="ul_class" t-valuef="flex-column"/>-->
+                <!--                    <t t-set="parent_combination" t-value="None"/>-->
+                <!--                </t>-->
+                <t t-call="ecommerce_product.variants_nds"/>
+                <!--                <t t-else="">-->
+                <!--                    <ul class="d-none js_add_cart_variants mb-0" t-att-data-attribute_exclusions="{'exclusions: []'}"/>-->
+                <!--                </t>-->
+            </t>
+        </xpath>
+
+
+        <!--Muestra los productos que tiene asignado el pack-->
+        <xpath expr="//section" position="after">
+            <div class="container">
+                <div class="d-flex overflow-auto">
+                    <div class="row justify-content-start flex-nowrap">
+                        <t t-foreach="product.sudo().pack_line_ids" t-as="pack">
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                <div class="text-center">
+                                    <img t-if="pack.product_id.image_1920" class="img-fluid"
+                                         t-att-src="image_data_uri(pack.product_id.image_1920)"/>
+                                    <img t-if="not pack.product_id.image_1920" class="img-fluid"
+                                         src="/ecommerce_product/static/img/placeholder.png"/>
+                                    <p class="mt-2" t-field="pack.product_id.name"/>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+
+        <!--Cuando hay un único atributo no lo muestra-->
+        <xpath expr="//div[@id='product_attributes_simple']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+        <!--No muestra la página de abajo-->
+        <xpath expr="//div[@id='o_product_terms_and_share']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+        <xpath expr="//div[@itemprop='description']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('oe_structure')]" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+       
+
+    </template>
+</odoo>

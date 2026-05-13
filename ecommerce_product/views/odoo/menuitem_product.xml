@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_product_template" name="Product Information" parent="website.menu_website_global_configuration"
+                  sequence="100"/>
+
+        <menuitem id="menu_fiberfamily_tree" name="Fiber Family" parent="menu_product_template"
+                  action="action_fiberfamily_tree" sequence="110"/>
+        <menuitem id="menu_colorgroup_tree" name="Color Group" parent="menu_product_template"
+                  action="action_colorgroup_tree" sequence="110"/>
+        <menuitem id="menu_properties_tree" name="Properties" parent="menu_product_template"
+                  action="action_properties_tree" sequence="110"/>
+        <menuitem id="menu_usage_tree" name="Usage" parent="menu_product_template"
+                  action="action_usage_tree" sequence="110"/>
+        <menuitem id="menu_producttype_tree" name="Product Type" parent="menu_product_template"
+                  action="action_producttype_tree" sequence="110"/>
+        <menuitem id="menu_structure_tree" name="Structure" parent="menu_product_template"
+                  action="action_structure_tree" sequence="110"/>
+        <menuitem id="menu_careinstructions_tree" name="Care Instructions" parent="menu_product_template"
+                  action="action_careinstructions_tree" sequence="110"/>
+        <menuitem id="menu_certification_tree" name="Certification" parent="menu_product_template"
+                  action="action_certification_tree" sequence="110"/>
+        <menuitem id="menu_availablemeters_tree" name="Available meters" parent="menu_product_template"
+                  action="action_availablemeters_tree" sequence="110"/>
+        <menuitem id="menu_composition_tree" name="Composition" parent="menu_product_template"
+                  action="action_composition_tree" sequence="110"/>
+        <menuitem id="menu_useropenpack_tree" name="User Open Pack" parent="menu_product_template"
+                  action="action_useropenpack_tree" sequence="110"/>
+        <menuitem id="menu_openpack_tree" name="Open Pack" parent="menu_product_template"
+                  action="action_openpack_tree" sequence="110"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<odoo noupdate="0">
+
+    <record id="ir_cron_compute_new_analytic" model="ir.cron">
+        <field name="name">Compute new analytic (Deprecated)</field>
+        <field name="model_id" ref="model_product_template_analytic"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_compute_new()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">False</field>
+    </record>
+
+    <record id="ir_cron_compute_new_analytic_new" model="ir.cron">
+        <field name="name">Compute new analytic</field>
+        <field name="model_id" ref="model_product_template_analytic_new"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_compute_new()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active">True</field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="billing_address" name="Billing Adress">
+    <div id = "ctn_billing_address" class  = "container" >
+        <label>Billing Address</label>
+
+        <div class="form-group">
+            <input type="text" class="form-control" id="invoice_name" name = "invoice_name" placeholder="Name*"/>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="invoice_lastname" name = "invoice_lastname" placeholder="Last name*"/>
+        </div>  
+        <div class="form-group">
+            <input type="text" class="form-control" id="invoice_phone" name = "invoice_phone" placeholder="Phone number*" maxlength="10" size = "10"/>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="invoice_address1" name = "invoice_address1" placeholder="Address 1*" maxlength="35" size ="35"/>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="invoice_address2" name = "invoice_address2" data-norequired = "true" placeholder="Address 2" maxlength="35" size ="35"/>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="invoice_additional" name = "invoice_additional" data-norequired = "true" placeholder="Additional delivery instructions"/>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <input type="text" class="form-control" id="invoice_postalcode" name = "invoice_postalcode" placeholder="Postal Code*"/>
+            </div>
+            <div class="form-group col-md-6">
+                <input type="text" class="form-control" id="invoice_city" name = "invoice_city" placeholder="City*"/>
+            </div>
+        </div>
+
+        <div>
+            <t t-set="countries" t-value="env['res.country'].sudo().search([('show_website','=',True)])"/>
+            <t t-if="countries">
+                <select class="form-select css_attribute_select mb-2" name="invoice_country" id="invoice_country">
+                    <t t-foreach="countries" t-as="country">
+                        <t t-if="country.name=='Spain'"><option t-att-value="country.id" t-esc="country.name" selected="selected" /></t>
+                        <t t-if="country.name!='Spain'"><option t-att-value="country.id" t-esc="country.name" /></t>
+                    </t>
+                </select>
+            </t>
+        </div>
+    </div>
+    </template>
+</odoo>
+
+

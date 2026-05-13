@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_country_not_website_tree_view" model="ir.ui.view">
+            <field name="name">res.country.not.website.tree.view</field>
+            <field name="model">res.country</field>
+            <field name = "inherit_id" ref = "base.view_country_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr ="field[@name='code']" position = "after">
+                    <field name="show_website"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="res_country_not_website_form_view" model="ir.ui.view">
+            <field name="name">res.country.not.website.form.view</field>
+            <field name="model">res.country</field>
+            <field name="inherit_id" ref="base.view_country_form"/>
+            <field name="arch" type="xml">
+                <xpath expr = "//field[@name='state_required']" position ="after">
+                   <field name="show_website"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

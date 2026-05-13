@@ -1,0 +1,140 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* analytic_product
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e-20231204\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-20 20:36+0000\n"
+"PO-Revision-Date: 2023-12-20 17:43-0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__analytic_account_id
+msgid "Analytic Account"
+msgstr "Cuenta Analítica"
+
+#. module: analytic_product
+#: model:ir.actions.server,name:analytic_product.ir_cron_compute_new_analytic_ir_actions_server
+#: model:ir.cron,cron_name:analytic_product.ir_cron_compute_new_analytic
+msgid "Compute new analytic"
+msgstr ""
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__customer_bill_amount
+msgid "Customer Amount"
+msgstr "Monto Cliente"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__customer_payment_pending_amount
+msgid "Customer Payment Pending"
+msgstr "Monto Adeudado Cliente"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__customer_bill_qty
+msgid "Customer Quantity"
+msgstr "Cantidad Cliente"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__display_name
+msgid "Display Name"
+msgstr "Nombre"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__id
+msgid "ID"
+msgstr ""
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic____last_update
+msgid "Last Modified on"
+msgstr "Úlitima modificación el"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__write_uid
+msgid "Last Updated by"
+msgstr "Ultima actualización por"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__write_date
+msgid "Last Updated on"
+msgstr "Ultima actualización en"
+
+#. module: analytic_product
+#: model:ir.actions.act_window,name:analytic_product.product_template_analytic_action
+#: model:ir.ui.menu,name:analytic_product.menu_product_template_analytic
+msgid "Product Analytics"
+msgstr "Analíticas Productos"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__product_category_id
+msgid "Product Category"
+msgstr "Categoría Producto"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__product_template_id
+msgid "Product Template"
+msgstr "Producto"
+
+#. module: analytic_product
+#: model_terms:ir.ui.view,arch_db:analytic_product.product_template_analytic_tree_view
+msgid "Product Template Analytic"
+msgstr "Analíticas Productos"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__purchase_amount
+msgid "Purchase Amount"
+msgstr "Monto Compra"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__purchase_qty
+msgid "Purchase Quantity"
+msgstr "Cantidad Compra"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__sale_amount
+msgid "Sale Amount"
+msgstr "Monto Venta"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__sale_qty
+msgid "Sale Quantity"
+msgstr "Cantidad Venta"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__vendor_bill_amount
+msgid "Vendor Amount"
+msgstr "Monto Vendedor"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__vendor_payment_pending_amount
+msgid "Vendor Payment Pending"
+msgstr "Monto Adeudado Vendedor"
+
+#. module: analytic_product
+#: model:ir.model.fields,field_description:analytic_product.field_product_template_analytic__vendor_bill_qty
+msgid "Vendor Quantity"
+msgstr "Cantidad Vendedor"
+
+#. module: analytic_product
+#: model:ir.model,name:analytic_product.model_product_template_analytic
+msgid "product.template.analytic"
+msgstr ""
