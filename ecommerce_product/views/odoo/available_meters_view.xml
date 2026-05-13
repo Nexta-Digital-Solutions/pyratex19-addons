@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_availablemeters_tree" model="ir.ui.view">
+            <field name="name">availablemeters.tree</field>
+            <field name="model">product.available.meters</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="name"/>
+                    <field name="min"/>
+                    <field name="max"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_availablemeters_tree" model="ir.actions.act_window">
+            <field name="name">Available meters</field>
+            <field name="res_model">product.available.meters</field>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="view_availablemeters_tree"/>
+        </record>
+    </data>
+</odoo>

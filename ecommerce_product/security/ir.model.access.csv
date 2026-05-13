@@ -1,0 +1,36 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fiberfamily,Fiber Family,model_fiber_family,base.group_user,1,1,1,1
+access_fiberfamily_portal,Fiber Family,model_fiber_family,,1,0,0,0
+access_colorgroup,Color Group,model_color_group,base.group_user,1,1,1,1
+access_colorgroup_portal,Color Group,model_color_group,,1,0,0,0
+access_usage,Usage,model_usage,base.group_user,1,1,1,1
+access_usage_portal,Usage,model_usage,,1,0,0,0
+access_properties,Properties,model_properties,base.group_user,1,1,1,1
+access_properties_portal,Properties,model_properties,,1,0,0,0
+access_producttype_internalusers,Product Type,model_product_type,base.group_user,1,1,1,1
+access_producttype,Product Type,model_product_type,,1,0,0,0
+access_structure,Structure,model_structure,base.group_user,1,1,1,1
+access_structure_portal,Structure,model_structure,,1,0,0,0
+access_careinstructions,Care Instructions,model_care_instructions,base.group_user,1,1,1,1
+access_careinstructions_portal,Care Instructions,model_care_instructions,,1,0,0,0
+access_certification,Certification,model_certification,base.group_user,1,1,1,1
+access_certification_portal,Certification,model_certification,,1,0,0,0
+access_availablemeters,Available Meters,model_product_available_meters,base.group_user,1,1,1,1
+access_availablemeters_portal,Available Meters,model_product_available_meters,,1,0,0,0
+access_composition,Composition,model_composition,base.group_user,1,1,1,1
+access_composition_portal,Composition,model_composition,,1,0,0,0
+access_openpack,Open Pack,model_open_pack,base.group_user,1,1,1,1
+access_openpack_portal,Open Pack,model_open_pack,,1,0,0,0
+access_useropenpack,User Open Pack,model_user_open_pack,base.group_user,1,1,1,1
+access_useropenpack_portal,User Open Pack,model_user_open_pack,,1,0,0,0
+access_stock_location,stock location public,stock.model_stock_location,,1,0,0,0
+access_barcode_nomenclature,barcode nomenclature public,barcodes.model_barcode_nomenclature,,1,0,0,0
+stock.access_stock_quant_all_users,stock.quant all_users,stock.model_stock_quant,,1,0,0,0
+mrp.access_mrp_all_users,mrp.bom all_users,mrp.model_mrp_bom,,1,0,0,0
+stock.access_stock_location_all_users,stock.location all_users,stock.model_stock_location,,1,0,0,0
+stock.access_stock_warehouse_all_users,stock.warehouse all_users,stock.model_stock_warehouse,,1,0,0,0
+stock.access_stock_move_all_users,stock.move all_users,stock.model_stock_move,,1,0,0,0
+product_pack.access_product_pack_line_portal,product.pack.line,product_pack.model_product_pack_line,base.group_portal,1,0,0,0
+sale.access_sale_order_line_portal,sale.order.line.portal,sale.model_sale_order_line,base.group_portal,1,1,1,0
+sale.access_sale_order_portal,sale.order.portal,sale.model_sale_order,base.group_portal,1,1,1,0
+mrp_subcontracting.access_subcontracting_portal_product,subcontracting.portal.product,product.model_product_product,base.group_portal,1,1,1,0

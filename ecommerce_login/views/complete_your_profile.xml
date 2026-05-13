@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="complete_your_profile" name="Complete Profile">
+        <t t-call="website.layout">
+
+        <form action="javascript:showModal()" id = "form-mlnda">
+            <div class="container" id="divFields">
+                <h2>Complete your profile</h2>
+                <hr/>
+                <div class="row" >
+
+                    <div class="col-md-6">
+                
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="form-group">
+                                <input type="text" v-model = "name" class="form-control" id="name" name = "name" placeholder="Name*" required = "required"/>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" v-model = "lastname" class="form-control" id="lastname" name = "lastname" placeholder="Last name*" required = "required"/>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" v-model = "email" class="form-control" id="email" name = "email" placeholder="email*" required = "required" />
+                            </div>
+                            <div class="form-group" style = "display:flex">
+                                <input type="text" class="form-control" id="company" name = "company" placeholder="If there is no Company, enter your name again*" required = "required"/>
+
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="phone" name = "phone" placeholder="Phone number*" required = "required" maxlength="10" size = "10"/>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" v-model = "address1" class="form-control" id="address1" name = "address1" placeholder="Address 1*" required = "required" maxlength="35" size ="35" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="address2" name = "address2" placeholder="Address 2" maxlength="35" size ="35"/>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="additional" name = "additional_instructions" 
+                                       placeholder="Additional delivery instructions"/>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input type="text" v-model = "postalcode" class="form-control" id="postalcode" name = "postalcode" placeholder="Postal Code*" required = "required"/>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <input type="text" v-model = "city" class="form-control" id="city" name = "city" placeholder="City*" required = "required"/>
+                                </div>
+                            </div>
+
+                            <div>
+                                <t t-set="countries" t-value="env['res.country'].sudo().search([])"/>
+                                <t t-if="countries">
+                                    <select class="form-select css_attribute_select mb-2" name="country" id="country" onchange = "$('#invoice_country').val($(this).val())" >
+                                        <t t-foreach="countries.filtered(lambda x: x.show_website == True)" t-as="country">
+                                            <t t-if="country.name=='Spain'"><option t-att-value="country.id" t-esc="country.name" selected="selected" /></t>
+                                            <t t-if="country.name!='Spain'"><option t-att-value="country.id" t-esc="country.name" /></t>
+                                        </t>
+                                    </select>
+                                </t>
+                            </div>
+                            <div>
+                                <t t-set="professions"
+                                   t-value="['individual', 'student', 'company', 'library', 'project']"/>
+                                <select class="form-select css_attribute_select mb-2" name="profession">
+                                    <option value="" selected="selected">I'm</option>
+                                    <t t-foreach="professions" t-as="profession">
+                                        <option t-att-value="profession"
+                                                t-esc="{'individual': 'An Individual', 'student': 'A Student', 'company': 'A Company', 'library': 'A Material Library', 'project': 'Starting a new project'}[profession]"/>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <div>
+                                <t t-set="about_us_options"
+                                   t-value="['engine', 'instagram', 'linkedin', 'word', 'events', 'newspaper', 'other']"/>
+                                <select class="form-select css_attribute_select mb-2" name="about_us"
+                                        id="about_us_select">
+                                    <option value="" selected="selected">About Us</option>
+                                    <t t-foreach="about_us_options" t-as="option">
+                                        <option t-att-value="option"
+                                                t-esc="{'engine': 'Search engine', 'instagram': 'Instagram', 'linkedin': 'Linkedin', 'word': 'Word of Mouth', 'events': 'Events', 'newspaper': 'Newspaper/Press', 'other': 'Other'}[option]"/>
+                                    </t>
+                                </select>
+                                <input type="text" id="other_reason" name="other_reason" style="display: none;"
+                                       placeholder="Enter Other Reason"/>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    My billing address is different from my shipping
+                                </label>
+                            </div>
+
+
+                            <hr/>
+
+                            <div id="billingAddressContainer" class="container" style="display: none;">
+                                <t t-call="ecommerce_login.billing_address"/>
+                            </div>
+
+                            <div>
+                                <button type="submit" class="btn btn-secondary">Next</button>
+                            </div>
+
+
+                    </div>
+                    <!--Modificar este div para recibir los datos del formulario-->
+                    <div class="col-md-6">
+                        <div class="card mb-3" style="max-width: 400px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="/ecommerce_login/static/img/placeholder.svg" class="img-fluid rounded-start" alt="..."/>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title" placeholder = "name">{{ name }} {{ lastname }}</h5>
+                                        <p class="card-text" placeholder = "email">{{ email }}
+                                        </p>
+                                        <p class="card-text" placeholder = "phone number">{{ phonenumber }}</p>
+                                        <p class="card-text">
+                                            <small class="text-muted">Last updated 3 mins ago</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <t t-call = "ecommerce_login.mldna"/>
+                <t t-call = "ecommerce_login.dlna_process_complete"/>
+                <t t-call = "ecommerce_login.template_loader"/>
+
+            </div>
+        </form>
+            <script> <!--Muestra el input cuando seleccionan "otros" en el dropdown-->
+                document.getElementById("about_us_select").addEventListener("change", function() {
+                var otherReasonInput = document.getElementById("other_reason");
+                if (this.value === "other") {
+                    otherReasonInput.style.display = "block";
+                } else {
+                    otherReasonInput.style.display = "none";
+                }
+                
+                });
+
+                function showModal(){
+                    $('#modal_lnda').modal('show');
+                } 
+
+            </script>
+
+            
+
+        </t>
+    </template>
+</odoo>

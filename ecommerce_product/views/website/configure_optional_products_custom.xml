@@ -1,0 +1,32 @@
+<odoo>
+    <template id="configure_optional_products_custom"
+              inherit_id="sale_product_configurator.configure_optional_products">
+
+        <xpath expr="//table//thead//tr//th[2]" position="replace">
+            <th>
+                <span class="label">Attributes</span>
+            </th>
+            <th class="text-center td-qty_available">
+                <span class="label">Quantity Available</span>
+            </th>
+        </xpath>
+
+
+        <xpath expr="//tr[hasclass('o_select_options')]" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+
+        <xpath expr="//td[hasclass('td-product_name')]" position="after">
+            <td class="text-center td-qty-available">
+                <div>
+                    <span t-field="product.virtual_available" class ="oe_qty_available"/>
+                </div>
+                <div>
+                    <span class  ="oe_message_stock" style ="display:none;color:red"> No stock for this quantity</span>
+                </div>
+            </td>
+        </xpath>
+
+    </template>
+</odoo>

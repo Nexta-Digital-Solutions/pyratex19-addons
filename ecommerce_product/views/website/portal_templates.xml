@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>  
+  <template id="portal_contact_hidesales_email" name="Contact_hideSales" inherit_id = "portal.portal_contact">
+    <xpath expr ="//div[hasclass('o_portal_contact_details')]" position = "replace">
+        <div class="o_portal_contact_details mb-5">
+            <h4><t t-if="title" t-esc="title"/><t t-else="">Your contact</t></h4>
+            <hr class="mt-1 mb0"/> 
+            <div class="d-flex flex-nowrap align-items-center mb-1">
+                <div class="fa fa-map-marker fa-fw me-1"></div>
+                <span t-esc="sales_user.city"/>
+            </div>
+        </div>
+    </xpath>
+  </template>
+</odoo>

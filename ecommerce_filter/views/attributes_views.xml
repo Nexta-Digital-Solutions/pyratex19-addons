@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="filtered" inherit_id="website_sale.products_attributes" name="Filters">
+        <xpath expr="//div[@id='wsale_products_attributes_collapse']" position="replace">
+            <!--            <form t-if="attributes" class="js_attributes position-relative mb-2" method="get">-->
+            <!--            <form class="js_attributes position-relative mb-2" method="get">-->
+            <form class="position-relative mb-2">
+                <div t-attf-class="input-group #{_classes}" role="search" style="display: flex; align-items: center;">
+                    <t t-set="search_placeholder">Search...</t>
+                    <input type="search" name="search"
+                           t-att-class="'search-query form-control oe_search_box %s' % _input_classes"
+                           t-att-placeholder="placeholder if placeholder else search_placeholder" t-att-value="search"
+                           style="flex: 1;margin:0 !important"/>
+                    <button type="submit" t-att-class="'btn oe_search_button %s' % (_submit_classes or 'btn-primary')"
+                            aria-label="Search" title="Search" style="flex-shrink: 0;">
+                        <i class="oi oi-search"/>
+                        <span t-if="search" class="oe_search_found">
+                            <!--
+                            <small>(
+                                <t t-out="search_count or 0"/>
+                                found)
+                            </small>
+                            -->
+                        </span>
+                    </button>
+                </div>
+                <!--Añade los atributos con el formato que piden en el Figma-->
+
+                <h6 class="mb-3">
+                    <b class="o_products_attributes_title d-none d-lg-block">Filters</b>
+                </h6>
+
+                <!--                <a t-if="attrib_values or fiberfamily_set or colorgroup_set or property_set or structure_set or usage_set or availablemeters_set or producttype_set or careinstructions_set"-->
+                <!--                   t-att-href="keep('/shop'+ ('/category/'+slug(category)) if category else None, attrib=0)"-->
+                <!--                   t-attf-class="btn btn-{{navClass}} d-flex py-1 mb-2">-->
+                <!--                    <small class="mx-auto">-->
+                <!--                        <b>Clear Filters</b>-->
+                <!--                    </small>-->
+                <!--                    <i class="oi oi-close"/>-->
+                <!--                </a>-->
+
+                <t t-set="producttype" t-value="env['product.type'].sudo().search([])"/>
+                <t t-if="producttype">
+                    <span t-esc="structure_set" class="d-none"/>
+                    <select class="form-select css_attribute_select mb-2" name="producttype">
+                        <option value="" selected="true">Product type</option>
+                        <t t-foreach="producttype" t-as="pt">
+                            <option t-if="pt.name == 'Swatchpack'" t-att-value="'%s' % (pt.id)"
+                                    t-esc="pt.name + ' (closed)'"
+                                    t-att-selected="pt.id == producttype_set"/>
+                            <option t-if="pt.name == 'Swatch'" t-att-value="'%s' % (pt.id)" t-esc="pt.name + ' (open)'"
+                                    t-att-selected="pt.id == producttype_set"/>
+                            <option t-if="pt.name != 'Swatchpack' and pt.name != 'Swatch'" t-att-value="'%s' % (pt.id)"
+                                    t-esc="pt.name"
+                                    t-att-selected="pt.id == producttype_set"/>
+                        </t>
+                    </select>
+                </t>
+
+
+                <t t-set="fiber_families" t-value="env['fiber.family'].sudo().search([])"/>
+                <t t-if="fiber_families">
+                    <span t-esc="fiberfamily_set" class="d-none"/>
+                    <select class="form-select css_attribute_select mb-2" name="fiberfamily">
+                        <option value="" selected="true">Fiber Family</option>
+                        <t t-foreach="fiber_families" t-as="ff">
+                            <option t-att-value="'%s' % (ff.id)" t-esc="ff.name"
+                                    t-att-selected="ff.id == fiberfamily_set"/>
+                        </t>
+                    </select>
+                </t>
+
+                <t t-set="colorgroup" t-value="env['color.group'].sudo().search([])"/>
+                <t t-if="colorgroup">
+                    <span t-esc="colorgroup_set" class="d-none"/>
+                    <select class="form-select css_attribute_select mb-2" name="colorgroup">
+                        <option value="" selected="true">Color group</option>
+                        <t t-foreach="colorgroup" t-as="cg">
+                            <option t-att-value="'%s' % (cg.id)" t-esc="cg.name"
+                                    t-att-selected="cg.id == colorgroup_set"/>
+                        </t>
+                    </select>
+                </t>
+
+                <t t-set="properties" t-value="env['properties'].sudo().search([])"/>
+                <t t-if="properties">
+                    <span t-esc="property_set" class="d-none"/>
+                    <select class="form-select css_attribute_select mb-2" name="property">
+                        <option value="" selected="true">Properties</option>
+                        <t t-foreach="properties" t-as="prop">
+                            <option t-att-value="'%s' % (prop.id)" t-esc="prop.name"
+                                    t-att-selected="prop.id == property_set"/>
+                        </t>
+                    </select>
+                </t>
+
+                <t t-set="usage" t-value="env['usage'].sudo().search([])"/>
+                <t t-if="usage">
+                    <span t-esc="usage_set" class="d-none"/>
+                    <select class="form-select css_attribute_select mb-2" name="usage">
+                        <option value="" selected="true">Usage</option>
+                        <t t-foreach="usage" t-as="u">
+                            <option t-att-value="'%s' % (u.id)" t-esc="u.name"
+                                    t-att-selected="u.id == usage_set"/>
+                        </t>
+                    </select>
+                </t>
+
+                <t t-set="availablemeters" t-value="env['product.available.meters'].sudo().search([])"/>
+                <t t-if="availablemeters">
+                    <span t-esc="availablemeters_set" class="d-none"/>
+                    <select class="form-select css_attribute_select mb-2" name="availablemeters">
+                        <option value="" selected="true">Available meters</option>
+                        <t t-foreach="availablemeters" t-as="av">
+                            <option t-att-value="'%s' % (av.id)" t-esc="av.name"
+                                    t-att-selected="av.id == availablemeters_set"/>
+                        </t>
+                    </select>
+                </t>
+
+                <t t-set="struct" t-value="env['structure'].sudo().search([])"/>
+                <t t-if="struct">
+                    <span t-esc="structure_set" class="d-none"/>
+                    <select class="form-select css_attribute_select mb-2" name="structure">
+                        <option value="" selected="true">Structure</option>
+                        <t t-foreach="struct" t-as="s">
+                            <option t-att-value="'%s' % (s.id)" t-esc="s.name"
+                                    t-att-selected="s.id == structure_set"/>
+                        </t>
+                    </select>
+                </t>
+
+
+                <!--                <t t-set="careinstructions" t-value="env['care.instructions'].sudo().search([])"/>-->
+                <!--                <t t-if="careinstructions">-->
+                <!--                    <span t-esc="careinstructions_set" class="d-none"/>-->
+                <!--                    <select class="form-select css_attribute_select mb-2" name="careinstructions">-->
+                <!--                        <option value="" selected="true">Care Instructions</option>-->
+                <!--                        <t t-foreach="careinstructions" t-as="ci">-->
+                <!--                            <option t-att-value="'%s' % (ci.id)" t-esc="ci.name"-->
+                <!--                                    t-att-selected="ci.id == careinstructions_set"/>-->
+                <!--                        </t>-->
+                <!--                    </select>-->
+                <!--                </t>-->
+
+                <!--                <t t-set="certification" t-value="env['certification'].sudo().search([])"/>-->
+                <!--                <t t-if="certification">-->
+                <!--                    <span t-esc="certification_set" class="d-none"/>-->
+                <!--                    <select class="form-select css_attribute_select mb-2" name="certification">-->
+                <!--                        <option value="" selected="true">Certification</option>-->
+                <!--                        <t t-foreach="certification" t-as="c">-->
+                <!--                            <option t-att-value="'%s' % (c.id)" t-esc="c.name"-->
+                <!--                                    t-att-selected="c.id == certification_set"/>-->
+                <!--                        </t>-->
+                <!--                    </select>-->
+                <!--                </t>-->
+
+
+                <!--                                <t t-foreach="attributes" t-as="a">-->
+                <!--                                    <t t-if="a.name == 'Fiber Family'">-->
+                <!--                                        <select class="form-select css_attribute_select mb-2" name="attrib">-->
+                <!--                                            <option value="" selected="true">Fiber Family</option>-->
+                <!--                                            <t t-foreach="a.value_ids" t-as="v">-->
+                <!--                                                <option t-att-value="'%s-%s' % (a.id,v.id)" t-esc="v.name"-->
+                <!--                                                        t-att-selected="v.id in attrib_set"/>-->
+                <!--                                            </t>-->
+                <!--                                        </select>-->
+                <!--                                    </t>-->
+                <!--                                </t>-->
+
+                <!--                <t t-foreach="attributes" t-as="a">-->
+                <!--                    <t t-if="a.name == 'Color'">-->
+                <!--                        <select class="form-select css_attribute_select mb-2" name="attrib">-->
+                <!--                            <option value="" selected="true">Colors</option>-->
+                <!--                            <t t-foreach="a.value_ids" t-as="v">-->
+                <!--                                <option t-att-value="'%s-%s' % (a.id,v.id)" t-esc="v.name"-->
+                <!--                                        t-att-selected="v.id in attrib_set"/>-->
+                <!--                            </t>-->
+                <!--                        </select>-->
+                <!--                    </t>-->
+                <!--                </t>-->
+
+                <!--                <t t-foreach="attributes" t-as="a">-->
+                <!--                    <t t-if="a.name == 'Properties'">-->
+                <!--                        <select class="form-select css_attribute_select mb-2" name="attrib">-->
+                <!--                            <option value="" selected="true">Properties</option>-->
+                <!--                            <t t-foreach="a.value_ids" t-as="v">-->
+                <!--                                <option t-att-value="'%s-%s' % (a.id,v.id)" t-esc="v.name"-->
+                <!--                                        t-att-selected="v.id in attrib_set"/>-->
+                <!--                            </t>-->
+                <!--                        </select>-->
+                <!--                    </t>-->
+                <!--                </t>-->
+
+                <!--                <t t-foreach="attributes" t-as="a">-->
+                <!--                    <t t-if="a.name == 'Usage'">-->
+                <!--                        <select class="form-select css_attribute_select mb-2" name="attrib">-->
+                <!--                            <option value="" selected="true">Usage</option>-->
+                <!--                            <t t-foreach="a.value_ids" t-as="v">-->
+                <!--                                <option t-att-value="'%s-%s' % (a.id,v.id)" t-esc="v.name"-->
+                <!--                                        t-att-selected="v.id in attrib_set"/>-->
+                <!--                            </t>-->
+                <!--                        </select>-->
+                <!--                    </t>-->
+                <!--                </t>-->
+
+                <!--                <t t-foreach="attributes" t-as="a">-->
+                <!--                    <t t-if="a.name == 'Product Type'">-->
+                <!--                        <select class="form-select css_attribute_select mb-2" name="attrib">-->
+                <!--                            <option value="" selected="true">Product Type</option>-->
+                <!--                            <t t-foreach="a.value_ids" t-as="v">-->
+                <!--                                <option t-att-value="'%s-%s' % (a.id,v.id)" t-esc="v.name"-->
+                <!--                                        t-att-selected="v.id in attrib_set"/>-->
+                <!--                            </t>-->
+                <!--                        </select>-->
+                <!--                    </t>-->
+                <!--                </t>-->
+
+
+                <!--Si en lugar de añadir Product Info como atributos se añade en una tabla, descomentar lo de abajo-->
+
+                <!--                <t t-set="fiber_families" t-value="env['product.product.fiberfamily'].search([])"/>-->
+                <!--                <select class="form-select css_attribute_select mb-2" name="fiber_family">-->
+                <!--                    <option value="" selected="true">Fiber Family</option>-->
+                <!--                    <t t-foreach="fiber_families" t-as="fiber">-->
+                <!--                        <option t-att-value="fiber.id" t-esc="fiber.name" t-att-selected="fiber.id in attrib_set"/>-->
+                <!--                    </t>-->
+                <!--                </select>-->
+
+                <!--                <t t-set="properties" t-value="env['product.product.properties'].search([])"/>-->
+                <!--                <select class="form-select css_attribute_select mb-2" name="property">-->
+                <!--                    <option value="" selected="true">Properties</option>-->
+                <!--                    <t t-foreach="properties" t-as="prop">-->
+                <!--                        <option t-att-value="prop.id" t-esc="prop.name" t-att-selected="prop.id in attrib_set"/>-->
+                <!--                    </t>-->
+                <!--                </select>-->
+
+                <!--                <t t-set="usages" t-value="env['product.product.usage'].search([])"/>-->
+                <!--                <select class="form-select css_attribute_select mb-2" name="usage">-->
+                <!--                    <option value="" selected="true">Usage</option>-->
+                <!--                    <t t-foreach="usages" t-as="u">-->
+                <!--                        <option t-att-value="u.id" t-esc="u.name" t-att-selected="u.id in attrib_set"/>-->
+                <!--                    </t>-->
+                <!--                </select>-->
+
+
+                <!--                <div class="d-flex justify-content-center">-->
+                <!--                    <div class="d-flex">-->
+                <!--                        <button name="filter" class="js_attributes btn btn-primary mr-2 w-100">Filter</button>-->
+                <!--                        <a t-att-href="keep('/shop'+ ('/category/'+slug(category)) if category else None, attrib=0)"-->
+                <!--                           t-attf-class="btn btn-{{navClass}} w-100">-->
+                <!--                            <small class="mx-auto">-->
+                <!--                                <b>Clear Filters</b>-->
+                <!--                            </small>-->
+                <!--                        </a>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+
+                <div class="d-flex">
+                    <button name="filter" class="js_attributes mr-2 h-100 w-100 btn btn-primary mr-1"
+                            style="background-color: grey; color: white; border-radius: 5px;font-family:sans-serif !important">Filter
+                    </button>
+                    <a t-att-href="keep('/shop'+ ('/category/'+slug(category)) if category else None, attrib=0)"
+                       t-attf-class="btn btn-{{navClass}} w-100"
+                       style="background-color: grey; color: white; border-radius: 5px;font-family:sans-serif !important">
+                        <small class="mx-auto">
+                            <b>Clear Filters</b>
+                        </small>
+                    </a>
+                </div>
+
+
+            </form>
+            <!--            <h6 class="mb-3">-->
+            <!--                <b class="o_products_attributes_title d-none d-lg-block">Swatch Packs</b>-->
+            <!--            </h6>-->
+            <!--&lt;!&ndash;            <div class="card mb-2" style="max-width: 100%;">&ndash;&gt;-->
+            <!--&lt;!&ndash;                <a t-att-href="" class="btn btn-secondary btn-sm">&ndash;&gt;-->
+            <!--&lt;!&ndash;                    <p class="card-title">Build-your-own Pack</p>&ndash;&gt;-->
+            <!--&lt;!&ndash;                </a>&ndash;&gt;-->
+            <!--&lt;!&ndash;            </div>&ndash;&gt;-->
+            <!--            <div class="card mb-2" style="max-width: 100%;">-->
+            <!--                <a t-att-href="'/shop?producttype=1'" class="btn btn-secondary btn-sm">-->
+            <!--                    <p class="card-title">Build-your-own Pack</p>-->
+            <!--                </a>-->
+            <!--            </div>-->
+            <!--            <t t-call="ecommerce_filter.portrait_categories"/>-->
+        </xpath>
+    </template>
+</odoo>

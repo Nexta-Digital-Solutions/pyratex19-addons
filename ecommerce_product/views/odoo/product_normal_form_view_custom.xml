@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    <record id="product_normal_form_view_custom" model="ir.ui.view">-->
+    <!--        <field name="name">product.normal.form.view.custom</field>-->
+    <!--        <field name="model">product.product</field>-->
+    <!--        <field name="inherit_id" ref="product.product_normal_form_view"/>-->
+    <!--        <field name="arch" type="xml">-->
+    <!--            <xpath expr="//notebook/page[@name='inventory']" position="after">-->
+    <!--                <page name="ecommerce" string="E-Shop">-->
+    <!--                    <group name="fields_ecommerce" string="Product Information">-->
+    <!--                            <field name="colorgroup_id" widget="many2many_tags"/>-->
+    <!--                    </group>-->
+    <!--                </page>-->
+    <!--            </xpath>-->
+    <!--        </field>-->
+    <!--    </record>-->
+
+
+    <record id="product_normal_form_view_custom" model="ir.ui.view">
+        <field name="name">product.normal.form.view.custom</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook//page[@name='ecommerce']//group[@name='fields_ecommerce']" position="inside">
+                <field name="colorgroup_id"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

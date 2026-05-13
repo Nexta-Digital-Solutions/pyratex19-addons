@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="portrait_categories" name="Categories">
+        <!--        <t name="Categories Filmstrip" t-name="website_sale.filmstrip_categories">-->
+        <!--            <t t-if="category.id">-->
+        <!--                <t t-set="entries"-->
+        <!--                   t-value="not search and category.child_id or category.child_id.filtered(lambda c: category.id in search_categories_ids)"/>-->
+
+        <!--                <t t-if="not entries">-->
+        <!--                    <t t-set="parent" t-value="category.parent_id"/>-->
+        <!--                    <t t-set="entries"-->
+        <!--                       t-value="not search and parent.child_id or parent.child_id.filtered(lambda c: parent.id in search_categories_ids)"/>-->
+        <!--                </t>-->
+        <!--            </t>-->
+        <!--            <t t-else="">-->
+        <!--                <t t-set="entries" t-value="categories"/>-->
+        <!--            </t>-->
+
+        <!--            <div t-if="entries">-->
+
+        <!--                <ul>-->
+        <!--                    <t t-foreach="entries" t-as="c" t-if="c.image_128" t-set="atLeastOneImage" t-value="True"/>-->
+        <!--                    <t t-if="category.parent_id" t-set="backUrl"-->
+        <!--                       t-value="keep('/shop/category/' + slug(category.parent_id), category=0)"/>-->
+        <!--                    <t t-else="" t-set="backUrl" t-value="'/shop'"/>-->
+
+        <!--                    <li t-foreach="entries" t-as="c" t-attf-class="d-flex {{'pe-3' if not c_last else ''}}"-->
+        <!--                        t-att-data-link-href="keep('/shop/category/' + slug(c), category=0)">-->
+        <!--                        <input type="radio" t-attf-name="wsale_categories_top_radios_{{parentCategoryId}}"-->
+        <!--                               class="btn-check pe-none" t-att-id="c.id" t-att-value="c.id"-->
+        <!--                               t-att-checked="'true' if c.id == category.id else None"/>-->
+
+        <!--                        <div t-attf-class=" btn btn-{{navClass}} m-1 d-flex align-items-center {{'ps-2 pe-3' if c.image_128 else 'px-4'}} fs-6 fw-normal {{ 'border-primary' if c.id == category.id else '' }}"-->
+        <!--                             t-att-for="c.id">-->
+        <!--                            <div t-if="c.image_128"-->
+        <!--                                 t-attf-style="background-image:url('data:image/png;base64,#{c.image_128}')"-->
+        <!--                                 class="o_image_40_cover oe_img_bg o_bg_img_center rounded-3 me-3" t-att-alt="c.name "/>-->
+        <!--                            <span t-field="c.name"/>-->
+        <!--                        </div>-->
+        <!--                    </li>-->
+        <!--                </ul>-->
+
+        <!--            </div>-->
+        <!--        </t>-->
+
+
+        <t t-name="website_sale.pack_products">
+            <t t-set="products" t-value="request.env['product.template'].sudo().search([('pack_ok', '=', True)])"/>
+<!--            <div class="container">-->
+                <div class="row">
+                    <div class="col">
+                        <t t-foreach="products" t-as="product">
+                            <div class="card mb-2" style="max-width: 100%;">
+                                <a t-att-href="'/shop/product/' + str(product.id)" class="btn btn-primary btn-sm">
+                                    <p class="card-title" t-esc="product.name"/>
+<!--                                    <p class="card-text" t-field="product.description"/>-->
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+<!--            </div>-->
+        </t>
+
+    </template>
+
+</odoo>

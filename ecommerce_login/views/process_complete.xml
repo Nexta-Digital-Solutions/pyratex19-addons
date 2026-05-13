@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="dlna_process_complete" name="dlna_process_complete">
+         <div class="modal fade show"  style="z-index: 1900" id="modal_dlna_process_complete" data-toogle="modal_dlna_process_complete" tabindex="-1" role="dialog"  aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <div class = "logo" style = "padding-left:35%">
+                                <img src = "/ecommerce_login/static/img/logo_pyratex.png"/>
+                              </div>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="col-sd-6">
+                              <div class = "message">
+                                <span>
+                                your registration has been successful
+                                </span>
+                              </div>
+                              <div class = "tranks">
+                                <span>thank you</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" id = "btn_close_process_complete" name ="btn_close_process_complete" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+          </div>
+    </template>
+</odoo>

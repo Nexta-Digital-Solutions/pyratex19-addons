@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_colorgroup_tree" model="ir.ui.view">
+            <field name="name">colorgroup.tree</field>
+            <field name="model">color.group</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_colorgroup_tree" model="ir.actions.act_window">
+            <field name="name">Color Group</field>
+            <field name="res_model">color.group</field>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="view_colorgroup_tree"/>
+        </record>
+    </data>
+</odoo>

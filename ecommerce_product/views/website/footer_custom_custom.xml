@@ -1,0 +1,39 @@
+<odoo>
+    <template id="footer_custom_custom" inherit_id="website.footer_custom">
+        <xpath expr="//div[@id='footer']" position="replace">
+<!--            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">-->
+            <div id="footer" class="bg-white" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Text">
+                    <div class="container bg-white">
+                        <div class="row">
+                            <ul class="list-unstyled d-flex justify-content-center gap-3">
+                                <li class="d-inline">
+                                    <a href="/" class="text-decoration-none text-dark">Home</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-decoration-none text-dark">About us</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-decoration-none text-dark">Products</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-decoration-none text-dark">Services</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-decoration-none text-dark">Legal</a>
+                                </li>
+                                <t t-set="configurator_footer_links" t-value="[]"/>
+                                <li t-foreach="configurator_footer_links" t-as="link">
+                                    <a t-att-href="link['href']" t-esc="link['text']"/>
+                                </li>
+                                <li>
+                                    <a href="/contactus" class="text-decoration-none text-dark">Contact us</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+</odoo>

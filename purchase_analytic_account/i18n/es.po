@@ -1,0 +1,39 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_analytic_account
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-04 19:41+0000\n"
+"PO-Revision-Date: 2023-12-04 16:42-0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: purchase_analytic_account
+#: model:ir.model.fields,field_description:purchase_analytic_account.field_purchase_order__analytic_account_id
+#: model:ir.model.fields,field_description:purchase_analytic_account.field_purchase_report__analytic_account_id
+msgid "Analytic Account"
+msgstr "Cuenta Analítica"
+
+#. module: purchase_analytic_account
+#: model:ir.model,name:purchase_analytic_account.model_purchase_order
+msgid "Purchase Order"
+msgstr "Pedido de compra"
+
+#. module: purchase_analytic_account
+#: model:ir.model,name:purchase_analytic_account.model_purchase_report
+msgid "Purchase Report"
+msgstr "Informe de Compras"
+
+#. module: purchase_analytic_account
+#: model:ir.model.fields,help:purchase_analytic_account.field_purchase_order__analytic_account_id
+msgid "The analytic account related to this purchase order."
+msgstr "La cuenta analítica relacionada a la compra."

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_usage_tree" model="ir.ui.view">
+            <field name="name">usage.tree</field>
+            <field name="model">usage</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_usage_tree" model="ir.actions.act_window">
+            <field name="name">Usage</field>
+            <field name="res_model">usage</field>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="view_usage_tree"/>
+        </record>
+    </data>
+</odoo>
