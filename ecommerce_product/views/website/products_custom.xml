@@ -33,9 +33,9 @@
                 </t>
                 <p>Unfortunately, we don’t have any product that matches your search. Please, clear the current filter
                     and try another search
-                </p>
+                </p>-->
                 <!--<p t-ignore="true" groups="sales_team.group_sale_manager">Click <i>'New'</i> in the top-right corner to create your first product.</p>-->
-            </div>
+            <!--</div>
 
 
         </xpath>-->
