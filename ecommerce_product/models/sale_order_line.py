@@ -6,7 +6,7 @@ class SaleOrderLine(models.Model):
 
     check_price = fields.Boolean(string = "Check Price", help = "To check price for 25% increment to fabrics product")
    
-    @api.depends('product_id', 'product_uom', 'product_uom_qty')
+    @api.depends('product_id', 'product_uom_id', 'product_uom_qty')
     def _compute_price_unit(self):
         for line in self:
             # check if there is already invoiced amount. if so, the price shouldn't change as it might have been
