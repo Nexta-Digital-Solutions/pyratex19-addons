@@ -1,5 +1,5 @@
 from odoo import fields, models, api, _
-from odoo.addons.http_routing.models.ir_http import slug, unslug
+
 
 
 class ProductTemplate(models.Model):
@@ -26,6 +26,7 @@ class ProductTemplate(models.Model):
         certification = options.get('certification')
 
         if category:
+            unslug = self.env['ir.http']._unslug
             domains.append([('public_categ_ids', 'child_of', unslug(category)[1])])
         if min_price:
             domains.append([('list_price', '>=', min_price)])

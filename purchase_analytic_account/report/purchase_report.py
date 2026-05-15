@@ -9,7 +9,7 @@ import re
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.osv.expression import AND, expression
+from odoo.fields import Domain
 
 
 class PurchaseReport(models.Model):

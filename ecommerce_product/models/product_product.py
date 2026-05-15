@@ -8,12 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ProductProduct(models.Model):
-    _inherit = ['product.product', "website.seo.metadata",
-                'website.published.multi.mixin',
-                'website.searchable.mixin',
-                'rating.mixin']
-
-    _name = 'product.product'
+    _inherit = ['product.product']
 
     colorgroup_id = fields.Many2one('color.group', string='Color Groups', readonly=False)
 

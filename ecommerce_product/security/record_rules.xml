@@ -9,10 +9,5 @@
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
         </record>
-
-        <record id="mrp_subcontracting.uom_subcontracting_rule" model="ir.rule">
-            <field name="perm_read" eval="False"/>
-            <field name="perm_write" eval="False"/>
-        </record>
     </data>
 </odoo>
