@@ -31,7 +31,7 @@
     'data': [
         'views/complete_your_profile.xml',
         'views/billing_address.xml',
-        'views/signup_custom.xml',
+        #'views/signup_custom.xml',
         'views/mlnda.xml',
         'views/process_complete.xml',
         'views/loader.xml',
@@ -39,14 +39,14 @@
         'views/res_partner.xml'
     ],
     
-    'assets': {
-        'web.assets_frontend': [
-            'ecommerce_login/static/src/js/vue@2.7.14.js',
-            'ecommerce_login/static/src/js/vue_instance.js',
-            'ecommerce_login/static/src/scss/signature.scss',
-            'ecommerce_login/static/src/js/jquery.serializejson.min.js',
-            'ecommerce_login/static/src/scss/loader.scss'
-        ]
-    },
-    'post_init_hook': 'post_init_hook'
+    # 'assets': {
+    #     'web.assets_frontend': [
+    #         'ecommerce_login/static/src/js/vue@2.7.14.js',
+    #         'ecommerce_login/static/src/js/vue_instance.js',
+    #         'ecommerce_login/static/src/scss/signature.scss',
+    #         'ecommerce_login/static/src/js/jquery.serializejson.min.js',
+    #         'ecommerce_login/static/src/scss/loader.scss'
+    #     ]
+    # },
+    # 'post_init_hook': 'post_init_hook'
 }
