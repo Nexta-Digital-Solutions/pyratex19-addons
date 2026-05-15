@@ -1,25 +1,35 @@
 from odoo.addons.website_sale.controllers.main import TableCompute
-from odoo.addons.website_sale_delivery.controllers.main import WebsiteSaleDelivery as ws
+from odoo.addons.website_sale.controllers.main import WebsiteSale as ws
 from odoo import fields, http, SUPERUSER_ID, tools, _
 from datetime import datetime
 from werkzeug.exceptions import NotFound
-from odoo.http import request
-from odoo.addons.http_routing.models.ir_http import slug
+from odoo.http import request, route
 from odoo.addons.website.controllers.main import QueryURL
+from odoo.addons.payment.controllers import portal as payment_portal
 from odoo.tools import lazy
+from odoo.addons.website_sale.const import SHOP_PATH
+from odoo.tools.translate import LazyTranslate, _
+_lt = LazyTranslate(__name__)
 
-
-class ProductsFilter(ws, TableCompute, http.Controller):
+class WebsiteSale(payment_portal.PaymentPortal):
 
     def _get_search_options(
-            self, category=None, product=None, attrib_values=None, pricelist=None, min_price=0.0, max_price=0.0, conversion_rate=1,
-            **post
+        self,
+        category=None,
+        attribute_value_dict=None,
+        tags=None,
+        min_price=0.0,
+        max_price=0.0,
+        conversion_rate=1,
+        **post,
     ):
         product_available_meters = False
         if post.get('availablemeters', False):
-            avail_meters = request.env['product.available.meters'].sudo().search([('id', '=', int(post.get('availablemeters')))])
+            avail_meters = request.env['product.available.meters'].sudo().search(
+                [('id', '=', int(post.get('availablemeters')))])
             product_available_meters = request.env['product.template'].sudo().search(
-            [('virtual_available', '<=', avail_meters.max), ('virtual_available', '>=', avail_meters.min)])
+                [('virtual_available', '<=', avail_meters.max), ('virtual_available', '>=', avail_meters.min)])
+
         res = {
             'displayDescription': True,
             'displayDetail': True,
@@ -28,11 +38,8 @@ class ProductsFilter(ws, TableCompute, http.Controller):
             'displayImage': True,
             'allowFuzzy': not post.get('noFuzzy'),
             'category': str(category.id) if category else None,
-            'product': str(product.id) if product else None,
             'min_price': min_price / conversion_rate,
             'max_price': max_price / conversion_rate,
-            'attrib_values': attrib_values,
-            'display_currency': pricelist.currency_id,
             'fiberfamily': post.get('fiberfamily', False),
             'colorgroup': post.get('colorgroup', False),
             'structure': post.get('structure', False),
@@ -44,16 +51,22 @@ class ProductsFilter(ws, TableCompute, http.Controller):
             'certification': post.get('certification', False),
         }
 
-        return res
-
-    @http.route([
-        '/shop',
-        '/shop/page/<int:page>',
-        '/shop/category/<model("product.public.category"):category>',
-        '/shop/category/<model("product.public.category"):category>/page/<int:page>',
-        '/shop/product/<model("product.template"):product>'
-    ], type='http', auth="public", website=True, sitemap=ws.sitemap_shop)
-    def shop(self, page=0, category=None, search='', min_price=0.0, max_price=0.0, ppg=False, product=None, **post):
+    @route(
+        [
+            SHOP_PATH,
+            f'{SHOP_PATH}/page/<int:page>',
+            f'{SHOP_PATH}/category/<model("product.public.category"):category>',
+            f'{SHOP_PATH}/category/<model("product.public.category"):category>/page/<int:page>',
+        ],
+        type='http',
+        auth='public',
+        website=True,
+        list_as_website_content=_lt("Shop"),
+        sitemap=ws.sitemap_shop,
+        # Sends a 404 error in case of any Access error instead of 403.
+        handle_params_access_error=lambda e, **kwargs: NotFound.code,
+    )
+    def shop(self, page=0, category=None, search='', min_price=0.0, max_price=0.0, tags='', **post):
         add_qty = int(post.get('add_qty', 1))
         try:
             min_price = float(min_price)
@@ -207,6 +220,7 @@ class ProductsFilter(ws, TableCompute, http.Controller):
         categs = lazy(lambda: Category.search(categs_domain))
 
         if category:
+            slug = request.env['ir.http']._slug
             url = "/shop/category/%s" % slug(category)
 
         pager = website.pager(url=url, total=product_count, page=page, step=ppg, scope=7, url_args=post)

@@ -1,25 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from collections import defaultdict
-from itertools import product as cartesian_product
-import json
 import logging
-from datetime import datetime
-from werkzeug.exceptions import Forbidden, NotFound
-from werkzeug.urls import url_decode, url_encode, url_parse
+from werkzeug.exceptions import NotFound
 
-from odoo import fields, http, SUPERUSER_ID, tools, _
-from odoo.fields import Command
+from odoo import fields, http, SUPERUSER_ID, _
 from odoo.http import request
-from odoo.addons.base.models.ir_qweb_fields import nl2br
-from odoo.addons.http_routing.models.ir_http import slug
-from odoo.addons.ecommerce_filter.controllers.website_sale_products import ProductsFilter
+from odoo.addons.ecommerce_filter.controllers.website_sale_products import WebsiteSale
 from odoo.addons.payment import utils as payment_utils
 from odoo.tools.json import scriptsafe as json_scriptsafe
 
 _logger = logging.getLogger(__name__)
 
-class WebsiteSaleProducts(ProductsFilter):
+class WebsiteSaleProducts(WebsiteSale):
     
     @http.route(['/shop/cart/update_json'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def cart_update_json(self, product_id, line_id=None, add_qty=None, set_qty=None, display=True,
