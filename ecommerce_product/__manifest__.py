@@ -46,7 +46,7 @@
         # 'views/website/attributes_filter_view.xml',
         # 'views/website/footer_custom_custom.xml',
         # 'views/website/products_item_custom.xml',
-        # 'views/website/products_custom.xml',
+        'views/website/products_custom.xml',
         # 'views/website/product_price_custom.xml',
         # 'views/website/dynamic_filter.xml',
         # 'views/website/product_details.xml',
