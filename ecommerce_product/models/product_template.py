@@ -38,8 +38,8 @@ class ProductTemplate(models.Model):
         for partial_combination in self._cartesian_product(product_template_attribute_values_per_line, parent_combination):
             combination = partial_combination + necessary_values
             if self._is_combination_possible(combination, parent_combination):
-                if ((self.user_has_groups('base.group_user')) or \
-                    (combination.ptav_product_variant_ids.is_published and not self.user_has_groups('base.group_user'))):
+                if ((self.env.user.has_group('base.group_user')) or \
+                    (combination.ptav_product_variant_ids.is_published and not self.env.user.has_group('base.group_user'))):
                     yield combination
 
         return _("There are no remaining possible combination.")
@@ -75,7 +75,7 @@ class ProductTemplate(models.Model):
         """ fabrics """
         if product.producttype_id.name:
             if (product.categ_id.parent_id.name.lower() == "fabric" and 
-                self.user_has_groups('base.group_portal')):
+                self.env.user.has_group('base.group_portal')):
                 # percentage_additional = int(self.env['ir.config_parameter'].sudo().get_param('Fabric Percentage', 1)) or 0
                 try:
                     percentage_additional = int(
@@ -214,7 +214,7 @@ class ProductTemplate(models.Model):
         try:
             if template.categ_id.parent_id.name:
                 if (template.categ_id.parent_id.name.lower() == "fabric" and 
-                    self.user_has_groups('base.group_portal')):
+                    self.env.user.has_group('base.group_portal')):
                     try:
                         percentage_additional = int(
                             self.env['ir.config_parameter'].sudo().get_param('Fabric Percentage', 1))
