@@ -26,7 +26,10 @@ class SaleOrder(models.Model):
                 'plan_id': plan_id[0].id if plan_id else False,
             })
             if bool(new_analytic_account_id):
-                self.update({
-                    'analytic_account_id': new_analytic_account_id.id
-                })
+                for line in self.order_line:
+                    line.update({
+                        'analytic_distribution': {
+                            new_analytic_account_id.id: 100,
+                        },
+                    })
         return res
