@@ -13,7 +13,7 @@ class SaleOrderLine(models.Model):
             # manually edited
             if line.qty_invoiced > 0 or (line.product_id.expense_policy == 'cost' and line.is_expense):
                 continue
-            if not line.product_uom or not line.product_id:
+            if not line.product_uom_id or not line.product_id:
                 line.price_unit = 0.0
             else:
                 line = line.with_company(line.company_id)
