@@ -46,23 +46,24 @@ class SaleOrder(models.Model):
         :rtype: `account.move` recordset
         :raises: UserError if one of the orders has no invoiceable lines.
         """
-        if not self.env['account.move'].check_access_rights('create', False):
+        if not self.env['account.move'].has_access('create'):
             try:
-                self.check_access_rights('write')
-                self.check_access_rule('write')
+                self.check_access('write')
             except AccessError:
                 return self.env['account.move']
 
         # 1) Create invoices.
         invoice_vals_list = []
-        invoice_item_sequence = 0 # Incremental sequencing to keep the lines order on the invoice.
+        invoice_item_sequence = 0  # Incremental sequencing to keep the lines order on the invoice.
         for order in self:
-            order = order.with_company(order.company_id).with_context(lang=order.partner_invoice_id.lang)
+            if order.partner_invoice_id.lang:
+                order = order.with_context(lang=order.partner_invoice_id.lang)
+            order = order.with_company(order.company_id)
 
             invoice_vals = order._prepare_invoice()
             invoiceable_lines = order._get_invoiceable_lines(final)
 
-            if not any(not line.display_type for line in invoiceable_lines):
+            if all(line.display_type for line in invoiceable_lines):
                 continue
 
             invoice_line_vals = []
@@ -78,20 +79,30 @@ class SaleOrder(models.Model):
                     )
                     down_payment_section_added = True
                     invoice_item_sequence += 1
-                invoice_line_vals.append(
-                    Command.create(
-                        line._prepare_invoice_line(sequence=invoice_item_sequence)
-                    ),
-                )
+
+                optional_values = {'sequence': invoice_item_sequence}
+
+                # When creating the final invoice, we want to express the lines representing
+                # the full order but negate the already created down payment lines.
+                # At this point, on the sale order, the down payment lines have a non-empty
+                # 'extra_tax_data' containing a price unit greater than zero and a quantity of 0.0.
+                if line.is_downpayment:
+                    optional_values['quantity'] = -1.0
+                    optional_values['extra_tax_data'] = self.env['account.tax'] \
+                        ._reverse_quantity_base_line_extra_tax_data(line.extra_tax_data)
+
+                for vals in line._prepare_invoice_lines_vals_list(**optional_values):
+                    invoice_line_vals.append(Command.create(vals))
+
                 invoice_item_sequence += 1
 
             invoice_vals['invoice_line_ids'] += invoice_line_vals
             invoice_vals_list.append(invoice_vals)
 
-        if not invoice_vals_list and self._context.get('raise_if_nothing_to_invoice', True):
+        if not invoice_vals_list and self.env.context.get('raise_if_nothing_to_invoice', True):
             raise UserError(self._nothing_to_invoice_error_message())
 
-        # 2) Manage 'grouped' parameter: group by (partner_id, currency_id).
+        # 2) Manage 'grouped' parameter: group by (partner_id, partner_shipping_id, currency_id).
         if not grouped:
             new_invoice_vals_list = []
             invoice_grouping_keys = self._get_invoice_grouping_keys()
@@ -101,7 +112,9 @@ class SaleOrder(models.Model):
                     x.get(grouping_key) for grouping_key in invoice_grouping_keys
                 ]
             )
-            for _grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: [x.get(grouping_key) for grouping_key in invoice_grouping_keys]):
+            for _grouping_keys, invoices in groupby(invoice_vals_list,
+                                                    key=lambda x: [x.get(grouping_key) for grouping_key in
+                                                                   invoice_grouping_keys]):
                 origins = set()
                 payment_refs = set()
                 refs = set()
@@ -123,6 +136,22 @@ class SaleOrder(models.Model):
             invoice_vals_list = new_invoice_vals_list
 
         # 3) Create invoices.
+
+        # As part of the invoice creation, we make sure the sequence of multiple SO do not interfere
+        # in a single invoice. Example:
+        # SO 1:
+        # - Section A (sequence: 10)
+        # - Product A (sequence: 11)
+        # SO 2:
+        # - Section B (sequence: 10)
+        # - Product B (sequence: 11)
+        #
+        # If SO 1 & 2 are grouped in the same invoice, the result will be:
+        # - Section A (sequence: 10)
+        # - Section B (sequence: 10)
+        # - Product A (sequence: 11)
+        # - Product B (sequence: 11)
+        #
         # Resequencing should be safe, however we resequence only if there are less invoices than
         # orders, meaning a grouping might have been done. This could also mean that only a part
         # of the selected SO are invoiceable, but resequencing in this case shouldn't be an issue.
@@ -131,30 +160,37 @@ class SaleOrder(models.Model):
             for invoice in invoice_vals_list:
                 sequence = 1
                 for line in invoice['invoice_line_ids']:
-                    line[2]['sequence'] = SaleOrderLine._get_invoice_line_sequence(new=sequence, old=line[2]['sequence'])
+                    line[2]['sequence'] = SaleOrderLine._get_invoice_line_sequence(new=sequence,
+                                                                                   old=line[2]['sequence'])
                     sequence += 1
-
-        # Manage the creation of invoices in sudo because a salesperson must be able to generate an invoice from a
-        # sale order without "billing" access rights. However, he should not be able to create an invoice from scratch.
-        type_of_order = self.env['product.type'].search([('type_of_order','=', self.x_studio_type_of_order)], limit = 1) if self.x_studio_type_of_order else False
-        if (type_of_order):
-            invoice_vals_list[0].update({ 
-                                         'journal_id': type_of_order.journal_id.id,
-                                         'x_studio_type_of_invoice': 'e-shop'
-                                        })
-        moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(invoice_vals_list)
+                # Manage the creation of invoices in sudo because a salesperson must be able to generate an invoice from a
+                # sale order without "billing" access rights. However, he should not be able to create an invoice from scratch.
+                type_of_order = self.env['product.type'].search([('type_of_order', '=', self.x_studio_type_of_order)],
+                                                                limit=1) if self.x_studio_type_of_order else False
+                if (type_of_order):
+                    invoice_vals_list[0].update({
+                        'journal_id': type_of_order.journal_id.id,
+                        'x_studio_type_of_invoice': 'e-shop'
+                    })
+        moves = self._create_account_invoices(invoice_vals_list, final)
 
         # 4) Some moves might actually be refunds: convert them if the total amount is negative
         # We do this after the moves have been created since we need taxes, etc. to know if the total
         # is actually negative or not
-        if final:
-            moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
+        if final and (moves_to_switch := moves.sudo().filtered(lambda m: m.amount_total < 0)):
+            with self.env.protecting([moves._fields['team_id']], moves_to_switch):
+                moves_to_switch.action_switch_move_type()
+                self.invoice_ids._set_reversed_entry(moves_to_switch)
+
         for move in moves:
-            move.message_post_with_view(
+            move.message_post_with_source(
                 'mail.message_origin_link',
-                values={'self': move, 'origin': move.line_ids.sale_line_ids.order_id},
-                subtype_id=self.env['ir.model.data']._xmlid_to_res_id('mail.mt_note'))
+                render_values={'self': move, 'origin': move.line_ids.sale_line_ids.order_id},
+                subtype_xmlid='mail.mt_note',
+            )
         return moves
+
+    # MAIL #
 
 
     def _cron_delete_saleorder_lines(self, days):
