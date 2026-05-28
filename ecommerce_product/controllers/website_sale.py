@@ -167,7 +167,7 @@ class WebsiteSaleProducts(WebsiteSale):
         for line in order.order_line:
             if line.product_id.categ_id.parent_id.name and (not line.check_price or qty):
                 if (line.product_id.categ_id.parent_id.name.lower() == "fabric" and 
-                    self.user_has_groups('base.group_portal')):
+                    self.env.user.has_group('base.group_portal')):
                     tax = line.tax_id.amount
                     price_unit = line.price_unit * (1 + percentage_additional / 100)
                     price_reduce = price_unit
