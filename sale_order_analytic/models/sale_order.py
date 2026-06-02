@@ -14,22 +14,23 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         res = super(SaleOrder, self).action_confirm()
-        if not self.analytic_account_id:
-            company_id = self.company_id
-            plan_id = self.env['account.analytic.plan'].search([('name','ilike', 'Default'), ('company_id','=', company_id.id)])
-            if not plan_id:
-                plan_id = self.env['account.analytic.plan'].search(
-                    [('name', 'ilike', 'Default'), ('company_id', '=', False)])
-            new_analytic_account_id = self.env['account.analytic.account'].create({
-                'name': self.name,
-                'partner_id': self.partner_id.id if self.partner_id else False,
-                'plan_id': plan_id[0].id if plan_id else False,
-            })
-            if bool(new_analytic_account_id):
-                for line in self.order_line:
-                    line.update({
-                        'analytic_distribution': {
-                            new_analytic_account_id.id: 100,
-                        },
-                    })
+        for line in self.order_line:
+            if not line.analytic_distribution:
+                company_id = self.company_id
+                plan_id = self.env['account.analytic.plan'].search([('name','ilike', 'Default'), ('company_id','=', company_id.id)])
+                if not plan_id:
+                    plan_id = self.env['account.analytic.plan'].search(
+                        [('name', 'ilike', 'Default'), ('company_id', '=', False)])
+                new_analytic_account_id = self.env['account.analytic.account'].create({
+                    'name': self.name,
+                    'partner_id': self.partner_id.id if self.partner_id else False,
+                    'plan_id': plan_id[0].id if plan_id else False,
+                })
+                if bool(new_analytic_account_id):
+                    for line in self.order_line:
+                        line.update({
+                            'analytic_distribution': {
+                                new_analytic_account_id.id: 100,
+                            },
+                        })
         return res

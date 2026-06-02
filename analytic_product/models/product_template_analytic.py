@@ -80,12 +80,14 @@ class ProductTemplateAnalyticNew(models.Model):
         # Lineas de Ventas
         for sale_line in sale_order_line_ids:
             distribution = sale_line.analytic_distribution
-            analitic_account_old_id = sale_line.order_id.analytic_account_id
+            #analitic_account_old_id = sale_line.order_id.analytic_account_id
             if not distribution:
-                if not analitic_account_old_id:
-                    continue
-                else:
-                    distribution = {str(analitic_account_old_id.id): 100}
+                continue
+                # Este código ya no es util porque en sale.order.line ya no hay cuenta analitica, esta la distribución analitica
+                # if not analitic_account_old_id:
+                #     continue
+                # else:
+                #     distribution = {str(analitic_account_old_id.id): 100}
 
             for account_id in distribution.keys():
                 analitic_account_id = AAA.browse(int(account_id))
