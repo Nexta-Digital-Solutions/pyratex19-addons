@@ -17,11 +17,11 @@ class WebsiteSaleProducts(WebsiteSale):
     def cart_update_json(self, product_id, line_id=None, add_qty=None, set_qty=None, display=True,
         product_custom_attribute_values=None, no_variant_attribute_values=None, price_unit = None,**kw
     ):
-        order = request.website.sale_get_order(force_create=True)
+        order = request._create_cart()
         if order.state != 'draft':
             request.website.sale_reset()
             if kw.get('force_create'):
-                order = request.website.sale_get_order(force_create=True)
+                order = request._create_cart()
             else:
                 return {}
 
@@ -118,10 +118,10 @@ class WebsiteSaleProducts(WebsiteSale):
         access_token: Abandoned cart SO access token
         revive: Revival method when abandoned cart. Can be 'merge' or 'squash'
         """
-        order = request.website.sale_get_order()
+        order = request.cart
         if order and order.state != 'draft':
             request.session['sale_order_id'] = None
-            order = request.website.sale_get_order()
+            order = request.cart
 
         request.session['website_sale_cart_quantity'] = order.cart_quantity
 
@@ -203,7 +203,7 @@ class WebsiteSaleProducts(WebsiteSale):
            
     @http.route(['/shop/cart/getOpenPackCount'], type='json', auth="user", methods=['POST'], website=True, csrf=False)
     def getOpenPackCount(self, **kw):
-        order = request.website.sale_get_order(force_create=False)
+        order = request._create_cart()
         is_openPack = True if order.order_line.filtered(lambda x: x.product_id.name == 'Open Pack') else False
         return is_openPack
         

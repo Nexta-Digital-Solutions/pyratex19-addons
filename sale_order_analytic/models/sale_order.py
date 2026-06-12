@@ -17,10 +17,10 @@ class SaleOrder(models.Model):
         for line in self.order_line:
             if not line.analytic_distribution:
                 company_id = self.company_id
-                plan_id = self.env['account.analytic.plan'].search([('name','ilike', 'Default'), ('company_id','=', company_id.id)])
+                plan_id = self.env['account.analytic.plan'].search([('name','ilike', 'Default')])
                 if not plan_id:
                     plan_id = self.env['account.analytic.plan'].search(
-                        [('name', 'ilike', 'Default'), ('company_id', '=', False)])
+                        [('name', 'ilike', 'Default')])
                 new_analytic_account_id = self.env['account.analytic.account'].create({
                     'name': self.name,
                     'partner_id': self.partner_id.id if self.partner_id else False,
