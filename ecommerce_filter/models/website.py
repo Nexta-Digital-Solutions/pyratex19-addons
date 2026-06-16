@@ -13,6 +13,6 @@ class Website(models.Model):
 
     def _prepare_sale_order_values(self, partner_sudo):
         self.ensure_one()
-        if request.get('update_pricelist'):
-            request.pricelist = False
+        #if request.get('update_pricelist'):
+        #    request.pricelist = False
         return super(Website, self)._prepare_sale_order_values(partner_sudo)

@@ -14,8 +14,8 @@ class SaleOrder(models.Model):
             'order_line': self.order_line
         })
 
-    def _prepare_order_line_update_values(self, order_line, quantity, linked_line_id=False, **kwargs):
-        values = super()._prepare_order_line_update_values(order_line, quantity, linked_line_id, **kwargs)
+    def _prepare_order_line_update_values(self, order_line, quantity, **kwargs):
+        values = super()._prepare_order_line_update_values(order_line, quantity, **kwargs)
         if 'price_unit' in kwargs:
             values["price_unit"] = kwargs.get('price_unit')
 
