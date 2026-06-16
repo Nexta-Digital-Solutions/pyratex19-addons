@@ -5,13 +5,14 @@ from werkzeug.exceptions import NotFound
 
 from odoo import fields, http, SUPERUSER_ID, _
 from odoo.http import request
-from odoo.addons.ecommerce_filter.controllers.website_sale_products import WebsiteSale
+#from odoo.addons.ecommerce_filter.controllers.website_sale_products import WebsiteSale
+from odoo.addons.payment.controllers import portal as payment_portal
 from odoo.addons.payment import utils as payment_utils
 from odoo.tools.json import scriptsafe as json_scriptsafe
 
 _logger = logging.getLogger(__name__)
 
-class WebsiteSaleProducts(WebsiteSale):
+class WebsiteSaleProducts(payment_portal.PaymentPortal):
     
     @http.route(['/shop/cart/update_json'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def cart_update_json(self, product_id, line_id=None, add_qty=None, set_qty=None, display=True,
@@ -147,7 +148,8 @@ class WebsiteSaleProducts(WebsiteSale):
             'suggested_products': [],
         })
         if order:
-            values.update(order._get_website_sale_extra_values())
+            #se comenta esta línas puesto que ya no es necesaria en odoo 19 esto ya lo hace la función que genera values
+            #values.update(order._get_website_sale_extra_values())
             order.order_line.filtered(lambda l: l.product_id and not l.product_id.active).unlink()
             values['suggested_products'] = order._cart_accessories()
             values.update(self._get_express_shop_payment_values(order))

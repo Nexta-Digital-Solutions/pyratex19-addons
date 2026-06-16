@@ -119,7 +119,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
         availablemeters_set = False
         if post.get('availablemeters', False):
             availablemeters_set = request.env['product.available.meters'].search([ ('id', '=',  int(post.get('availablemeters'))) ])
-            
+
         producttype_set = producttype_set_not_swatches = False
         if post.get('producttype'):
             producttype_set = int(post.get('producttype', False))
@@ -233,8 +233,8 @@ class WebsiteSale(payment_portal.PaymentPortal):
         products_with_variants = []
         location_id = request.env['stock.location'].sudo().search( [ ('name', '=', 'Spain/External Warehouse') ])
 
-       
-        products = search_product 
+
+        products = search_product
         if not producttype_set:
             for product in products:
                 for product_variant in product.product_variant_ids:
@@ -255,8 +255,8 @@ class WebsiteSale(payment_portal.PaymentPortal):
                             if (stock_product_variant):
                                 products_with_variants.append(product.id)
             products = products.search([ ('id','in',products_with_variants) ])
-        
-            
+
+
         ProductAttribute = request.env['product.attribute']
         if products:
             # get all products without limit
@@ -277,8 +277,8 @@ class WebsiteSale(payment_portal.PaymentPortal):
 
 
         products_prices = lazy(lambda: products._get_sales_prices(pricelist) or {})
-        
-        product_count = len(products) 
+
+        product_count = len(products)
         pager = website.pager(url=url, total=product_count, page=page, step=ppg, scope=7, url_args=post)
         offset = pager['offset']
         products = products[offset:offset + ppg]

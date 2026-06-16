@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-
+from odoo.http import request
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -45,7 +45,7 @@ class ProductTemplate(models.Model):
         return _("There are no remaining possible combination.")
 
 
-    def _get_combination_info(self, combination=False, product_id=False, add_qty=1, pricelist=False, parent_combination=False, only_template=False):
+    def _get_combination_info(self, combination=False, product_id=False, add_qty=1.0, uom_id=False, only_template=False,):
         """Override for website, where we want to:
             - take the website pricelist if no pricelist is set
             - apply the b2b/b2c setting to the result
@@ -59,12 +59,11 @@ class ProductTemplate(models.Model):
 
         if self.env.context.get('website_id'):
             current_website = self.env['website'].get_current_website()
-            if not pricelist:
-                pricelist = current_website.get_current_pricelist()
+
+            pricelist = current_website._get_and_cache_current_pricelist()
 
         combination_info = super(ProductTemplate, self)._get_combination_info(
-            combination=combination, product_id=product_id, add_qty=add_qty, pricelist=pricelist,
-            parent_combination=parent_combination, only_template=only_template)
+            combination=combination, product_id=product_id, add_qty=add_qty,uom_id=uom_id, only_template=only_template)
 
         product = self.env['product.product'].sudo().browse(combination_info['product_id']) or self
         qty_available = product.qty_available or 0
@@ -98,26 +97,41 @@ class ProductTemplate(models.Model):
         if self.env.context.get('website_id'):
             partner = self.env.user.partner_id
             company_id = current_website.company_id
-            fpos_id = self.env['website'].sudo()._get_current_fiscal_position_id(partner)
-            fiscal_position = self.env['account.fiscal.position'].sudo().browse(fpos_id)
+            fiscal_position = self.env['account.fiscal.position']._get_fiscal_position(partner=partner)
             product_taxes = product.sudo().taxes_id.filtered(lambda x: x.company_id == company_id)
             taxes = fiscal_position.map_tax(product_taxes)
 
-            price = self._price_with_tax_computed(
-                combination_info['price'], product_taxes, taxes, company_id, pricelist, product,
-                partner
+            price = product._get_tax_included_unit_price(
+                company_id,
+                company_id.currency_id,
+                fields.Date.today(),
+                'sale',
+                fiscal_position=fiscal_position,
+                product_price_unit=combination_info.get('price'),
+                product_currency=company_id.currency_id
             )
-            if pricelist.discount_policy == 'without_discount':
-                list_price = self._price_with_tax_computed(
-                    combination_info['list_price'], product_taxes, taxes, company_id, pricelist,
-                    product, partner
+
+
+            list_price = product._get_tax_included_unit_price(
+                company_id,
+                company_id.currency_id,
+                fields.Date.today(),
+                'sale',
+                fiscal_position=fiscal_position,
+                product_price_unit=combination_info.get('list_price'),
+                product_currency=company_id.currency_id
+            )
+
+            price_extra = product._get_tax_included_unit_price(
+                    company_id,
+                    company_id.currency_id,
+                    fields.Date.today(),
+                    'sale',
+                    fiscal_position=fiscal_position,
+                    product_price_unit=combination_info.get('price_extra'),
+                    product_currency=company_id.currency_id
                 )
-            else:
-                list_price = price
-            price_extra = self._price_with_tax_computed(
-                combination_info['price_extra'], product_taxes, taxes, company_id, pricelist,
-                product, partner
-            )
+
             has_discounted_price = pricelist.currency_id.compare_amounts(list_price, price) == 1
             prevent_zero_price_sale = not price and current_website.prevent_zero_price_sale
 
@@ -140,22 +154,23 @@ class ProductTemplate(models.Model):
 
         return combination_info
     
-    def _get_sales_prices(self, pricelist):
-        pricelist.ensure_one()
+    def _get_sales_prices(self, website):
+        website.ensure_one()
         partner_sudo = self.env.user.partner_id
-
+        prices = super()._get_sales_prices(website)
+        pricelist = request.pricelist
         # Try to fetch geoip based fpos or fallback on partner one
-        fpos_id = self.env['website']._get_current_fiscal_position_id(partner_sudo)
-        fiscal_position = self.env['account.fiscal.position'].sudo().browse(fpos_id)
+        fiscal_position = self.env['account.fiscal.position']._get_fiscal_position(partner=partner_sudo)
 
         sales_prices = pricelist._get_products_price(self, 1.0)
-        show_discount = pricelist.discount_policy == 'without_discount'
+        #show_discount = pricelist.discount_policy == 'without_discount'
         show_strike_price = self.env.user.has_group('website_sale.group_product_price_comparison')
 
-        base_sales_prices = self.price_compute('list_price', currency=pricelist.currency_id)
+
 
         res = {}
         for template in self:
+            #base_sales_prices = template.currency_id.round(template.list_price)
             price_reduce = sales_prices[template.id]
             price_reduce = self.addpercentageProductPrice(template, price_reduce)
 
@@ -165,15 +180,15 @@ class ProductTemplate(models.Model):
             template_price_vals = {
                 'price_reduce': price_reduce
             }
-            
-            base_price = None
-            price_list_contains_template = pricelist.currency_id.compare_amounts(price_reduce, base_sales_prices[template.id]) != 0
+
+            base_price = template.currency_id.round(template.list_price)
+            price_list_contains_template = pricelist.currency_id.compare_amounts(price_reduce, base_price) != 0
 
             if template.compare_list_price and show_strike_price:
                 # The base_price becomes the compare list price and the price_reduce becomes the price
                 base_price = template.compare_list_price
                 if not price_list_contains_template:
-                    price_reduce = base_sales_prices[template.id]
+                    price_reduce = base_price
                     template_price_vals.update(price_reduce=price_reduce)
                 if template.currency_id != pricelist.currency_id:
                     base_price = template.currency_id._convert(
@@ -183,17 +198,20 @@ class ProductTemplate(models.Model):
                         fields.Datetime.now(),
                         round=False
                     )
-            elif show_discount and price_list_contains_template:
-                base_price = base_sales_prices[template.id]
 
             base_price = self.addpercentageProductPrice(template, base_price)
             if base_price and base_price != price_reduce:
                 if not template.compare_list_price:
                     # Compare_list_price are never tax included
-                    base_price = self._price_with_tax_computed(
-                        base_price, product_taxes, taxes, self.env.company.id,
-                        pricelist, template, partner_sudo,
-                    )
+                    base_price = taxes.compute_all(
+                        base_price,
+                        currency=template.currency_id,
+                        quantity=1,
+                        product=template,
+                        partner=partner_sudo,
+                        is_refund=False,
+                        handle_price_include=True,
+                    )['total_included']
                 template_price_vals['base_price'] = base_price
             """  
             template_price_vals['price_reduce'] = self._price_with_tax_computed(
@@ -205,7 +223,7 @@ class ProductTemplate(models.Model):
                 template_price_vals['price_reduce'] = template_price_vals['price_reduce'] * (1 +  product_taxes[0].amount /100 )
             except Exception as e:
                 pass
-            """ 
+            """
             res[template.id] = template_price_vals
 
         return res
