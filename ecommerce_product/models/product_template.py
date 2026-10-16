@@ -6,7 +6,7 @@ class ProductTemplate(models.Model):
 
     country_id = fields.Many2one('res.country', string='Made in')
     width = fields.Float(string='Width', digits = (4,2))
-    description_ecommerce = fields.Text(string='Ecommerce Sales Description')
+    description_ecommerce = fields.Text(string='Ecommerce Sales Description', translate=True)
     fiberfamily_id = fields.Many2one('fiber.family', string='Fiber Family')
     property_id = fields.Many2many('properties', string='Property')
     usage_id = fields.Many2many('usage', string='Usage')
