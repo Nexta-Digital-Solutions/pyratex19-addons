@@ -1,98 +1,66 @@
-from odoo import fields, models, api, _
+from odoo import models
 
+# Filtros de la tienda que se resuelven con un campo directo de product.template
+SIMPLE_FILTER_FIELDS = {
+    'fiberfamily': 'fiberfamily_id',
+    'structure': 'structure_id',
+    'property': 'property_id',
+    'usage': 'usage_id',
+    'producttype': 'producttype_id',
+    'careinstructions': 'careinstructions_id',
+    'certification': 'certification_id',
+}
+
+# Almacén en el que se comprueban los metros disponibles
+AVAILABLE_METERS_LOCATION = 'Spain/External Warehouse'
+
+
+def _to_int(value):
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
 
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     def _search_get_detail(self, website, order, options):
-        with_image = options['displayImage']
-        with_description = options['displayDescription']
-        with_category = options['displayExtraLink']
-        with_price = options['displayDetail']
-        domains = [website.sale_product_domain()]
-        category = options.get('category')
-        min_price = options.get('min_price')
-        max_price = options.get('max_price')
-        attrib_values = options.get('attrib_values')
-        fiberfamily = options.get('fiberfamily')
-        # colorgroup = options.get('colorgroup')
-        structure = options.get('structure')
-        property = options.get('property')
-        usage = options.get('usage')
-        availablemeters = options.get('availablemeters')
-        producttype = options.get('producttype')
-        careinstructions = options.get('careinstructions')
-        certification = options.get('certification')
+        """Odoo 19: se parte del dominio estándar (categoría, precio, etiquetas,
+        atributos...) y se le añaden los filtros propios de la tienda."""
+        res = super()._search_get_detail(website, order, options)
+        domains = res['base_domain']
 
-        if category:
-            unslug = self.env['ir.http']._unslug
-            domains.append([('public_categ_ids', 'child_of', unslug(category)[1])])
-        if min_price:
-            domains.append([('list_price', '>=', min_price)])
-        if max_price:
-            domains.append([('list_price', '<=', max_price)])
-        if fiberfamily:
-            domains.append([('fiberfamily_id', '=', int(fiberfamily))])
-        # if colorgroup:
-        #     domains.append([('product_variant_ids.colorgroup_id', '=', int(colorgroup))])
-        if structure:
-            domains.append([('structure_id', '=', int(structure))])
-        if property:
-            domains.append([('property_id', '=', int(property))])
-        if usage:
-            domains.append([('usage_id', '=', int(usage))])
-        if availablemeters:
-            domains.append([('id', 'in', availablemeters)])
-        if producttype:
-            domains.append([('producttype_id', '=', int(producttype))])
-        if careinstructions:
-            domains.append([('careinstructions_id', '=', int(careinstructions))])
-        if certification:
-            domains.append([('certification_id', '=', int(certification))])
-        if attrib_values:
-            attrib = None
-            ids = []
-            for value in attrib_values:
-                if not attrib:
-                    attrib = value[0]
-                    ids.append(value[1])
-                elif value[0] == attrib:
-                    ids.append(value[1])
-                else:
-                    domains.append([('attribute_line_ids.value_ids', 'in', ids)])
-                    attrib = value[0]
-                    ids = [value[1]]
-            if attrib:
-                domains.append([('attribute_line_ids.value_ids', 'in', ids)])
-        search_fields = ['name', 'product_variant_ids.default_code']
-        fetch_fields = ['id', 'name', 'website_url']
-        mapping = {
-            'name': {'name': 'name', 'type': 'text', 'match': True},
-            'product_variant_ids.default_code': {'name': 'product_variant_ids.default_code', 'type': 'text',
-                                                 'match': True},
-            'website_url': {'name': 'website_url', 'type': 'text', 'truncate': False},
-        }
-        if with_image:
-            mapping['image_url'] = {'name': 'image_url', 'type': 'html'}
-        if with_description:
-            # Internal note is not part of the rendering.
-            search_fields.append('description')
-            fetch_fields.append('description')
-            search_fields.append('description_sale')
-            fetch_fields.append('description_sale')
-            mapping['description'] = {'name': 'description_sale', 'type': 'text', 'match': True}
-        if with_price:
-            mapping['detail'] = {'name': 'price', 'type': 'html', 'display_currency': options['display_currency']}
-            mapping['detail_strike'] = {'name': 'list_price', 'type': 'html',
-                                        'display_currency': options['display_currency']}
-        if with_category:
-            mapping['extra_link'] = {'name': 'category', 'type': 'html'}
-        return {
-            'model': 'product.template',
-            'base_domain': domains,
-            'search_fields': search_fields,
-            'fetch_fields': fetch_fields,
-            'mapping': mapping,
-            'icon': 'fa-shopping-cart',
-        }
+        for option, field_name in SIMPLE_FILTER_FIELDS.items():
+            value = _to_int(options.get(option))
+            if value:
+                domains.append([(field_name, '=', value)])
+
+        colorgroup = _to_int(options.get('colorgroup'))
+        if colorgroup:
+            domains.append([(
+                'product_variant_ids.product_template_attribute_value_ids'
+                '.product_attribute_value_id.colorgroup_id', '=', colorgroup,
+            )])
+
+        meters_id = _to_int(options.get('availablemeters'))
+        if meters_id:
+            domains.append([('id', 'in', self._get_templates_with_available_meters(meters_id))])
+
+        return res
+
+    def _get_templates_with_available_meters(self, meters_id):
+        meters = self.env['product.available.meters'].sudo().browse(meters_id).exists()
+        if not meters:
+            return []
+        Product = self.env['product.product'].sudo()
+        location = self.env['stock.location'].sudo().search(
+            [('complete_name', '=', AVAILABLE_METERS_LOCATION)], limit=1
+        )
+        if location:
+            Product = Product.with_context(location=location.id)
+        variants = Product.search([
+            ('virtual_available', '>=', meters.min),
+            ('virtual_available', '<=', meters.max),
+        ])
+        return variants.product_tmpl_id.ids

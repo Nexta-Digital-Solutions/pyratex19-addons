@@ -3,7 +3,7 @@
     <template id="complete_your_profile" name="Complete Profile">
         <t t-call="website.layout">
 
-        <form action="javascript:showModal()" id = "form-mlnda">
+        <form id="form-mlnda">
             <div class="container" id="divFields">
                 <h2>Complete your profile</h2>
                 <hr/>
@@ -136,22 +136,8 @@
 
             </div>
         </form>
-            <script> <!--Muestra el input cuando seleccionan "otros" en el dropdown-->
-                document.getElementById("about_us_select").addEventListener("change", function() {
-                var otherReasonInput = document.getElementById("other_reason");
-                if (this.value === "other") {
-                    otherReasonInput.style.display = "block";
-                } else {
-                    otherReasonInput.style.display = "none";
-                }
-                
-                });
-
-                function showModal(){
-                    $('#modal_lnda').modal('show');
-                } 
-
-            </script>
+            <!-- Odoo 19: la lógica de este formulario está en
+                 ecommerce_login/static/src/interactions/complete_profile.js -->
 
             
 

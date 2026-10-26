@@ -3,7 +3,8 @@
         <xpath expr ="//form/div[2]/div[2][hasclass('o_wsale_product_sub')]" position = "attributes">
             <attribute name="class" add="flex-column" separator=" "></attribute>
         </xpath>
-        <xpath expr="//form/div/div[hasclass('o_wsale_product_information_text')]" position="replace">
+        <!-- Odoo 19: el bloque de texto está ahora dentro de o_wsale_product_info_attributes_wrapper -->
+        <xpath expr="//div[hasclass('o_wsale_product_information_text')]" position="replace">
             <div class="o_wsale_product_information_text flex-grow-1 d-flex mr-1">
                 <h6 class="o_wsale_products_item_title mb-2" style = "font-size: small">
                     <!--                    <strong>PYRATEX®</strong>-->
@@ -26,8 +27,11 @@
             <!--Muestra los colores del producto-->
             <div style="display:flex; flex-wrap:wrap; ">
                 <t t-foreach="product.product_variant_ids" t-as="variant">
-                    <div t-if="variant.is_published and variant.mapped('product_template_attribute_value_ids').html_color">
-                        <label t-attf-style="background-color:#{variant.mapped('product_template_attribute_value_ids').html_color}" t-attf-class="css_attribute_color">
+                    <!-- Solo el primer valor con color: si la variante tiene varios valores,
+                         leer html_color sobre todos daba "Expected singleton" -->
+                    <t t-set="color_ptav" t-value="variant.product_template_attribute_value_ids.filtered('html_color')[:1]"/>
+                    <div t-if="variant.is_published and color_ptav">
+                        <label t-attf-style="background-color:#{color_ptav.html_color}" t-attf-class="css_attribute_color">
                             <input type="radio"/>
                         </label>
                     </div>
@@ -36,7 +40,7 @@
 
             <!--Muestra el precio de los productos-->
             <t t-set="has_price" t-value="template_price_vals['price_reduce'] > 0 if template_price_vals else False"/>
-            <div t-if="not user_id.partner_id.name == 'Public user' and product.producttype_id.name != 'Swatch' and has_price"
+            <div t-if="not user_id._is_public() and product.producttype_id.name != 'Swatch' and has_price"
                  class="product_price" itemprop="offers"
                  itemscope="itemscope" itemtype="http://schema.org/Offer">
                 <!-- 
@@ -60,8 +64,9 @@
 
         <xpath expr="//form" position="inside">
             <div class="container">
-                <t t-if="product.producttype_id and product.producttype_id.name == 'Swatches'">
-                    <button id="o_add_to_the_pack" name="pack" class="btn btn-primary mr-2 w-100 swatches-color-btn"
+                <t t-if="product.producttype_id.name in ('Swatches', 'Swatch')">
+                    <!-- type="button": dentro de un form, un button sin type envía el formulario -->
+                    <button type="button" id="o_add_to_the_pack" name="pack" class="btn btn-primary me-2 w-100 swatches-color-btn"
                             style="border-radius: 10px; color: white;"
                             t-attf-data-product-id="{{product.id}}">Add to the Pack
                     </button>
