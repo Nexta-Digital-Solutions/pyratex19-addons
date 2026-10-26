@@ -73,7 +73,7 @@ class ProductTemplate(models.Model):
        
         """ fabrics """
         if product.producttype_id.name:
-            if (product.categ_id.parent_id.name.lower() == "fabric" and 
+            if ((product.categ_id.parent_id.name or "").lower() == "fabric" and 
                 self.env.user.has_group('base.group_portal')):
                 # percentage_additional = int(self.env['ir.config_parameter'].sudo().get_param('Fabric Percentage', 1)) or 0
                 try:
@@ -88,7 +88,7 @@ class ProductTemplate(models.Model):
                         base_unit_price =  round(combination_info['base_unit_price'] * (1 + percentage_additional / 100),2)
                         combination_info.update( base_unit_price = base_unit_price)
 
-                combination_info.update( price = price)
+                    combination_info.update( price = price)
        
         #tax = (1 + product.taxes_id[0].amount / 100 ) if product.taxes_id else 1
         #price = combination_info['price'] *  tax

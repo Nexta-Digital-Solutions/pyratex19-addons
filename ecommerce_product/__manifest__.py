@@ -45,7 +45,7 @@
         # 'views/website/product_custom.xml',
         # 'views/website/attributes_filter_view.xml',
         # 'views/website/footer_custom_custom.xml',
-        # 'views/website/products_item_custom.xml',
+        'views/website/products_item_custom.xml',
         'views/website/products_custom.xml',
         # 'views/website/product_price_custom.xml',
         # 'views/website/dynamic_filter.xml',
@@ -67,27 +67,16 @@
     ],
     'demo': [
     ],
-    # 'assets': {
-    #     'web.assets_backend': [
-    #         'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap',
-    #         'ecommerce_product/static/src/js/variant_mixin.js',
-    #         #'ecommerce_product/static/src/js/product_configurator_modal.js'
-    #     ]
-    #     ,
-    #     'web.assets_frontend': [
-    #         'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap',
-    #         'ecommerce_product/static/src/scss/style.css',
-    #         'ecommerce_product/static/src/scss/material.min.css',
-    #         'ecommerce_product/static/src/js/material.min.js',
-    #         'ecommerce_product/static/src/js/add_to_the_pack.js',
-    #         'ecommerce_product/static/src/js/show_pack_price.js',
-    #         'ecommerce_product/static/src/js/add_to_cart.js',
-    #         # 'ecommerce_product/static/src/js/website_sale.js',
-    #         'ecommerce_product/static/src/js/remove_from_cart.js',
-    #         'ecommerce_product/static/src/js/variant_mixin.js',
-    #         #'ecommerce_product/static/src/js/product_configurator_modal.js'
-    #
-    #     ]
-    #
-    # }
+    'assets': {
+        'web.assets_frontend': [
+            'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap',
+            'ecommerce_product/static/src/scss/style.css',
+            'ecommerce_product/static/src/scss/material.min.css',
+            'ecommerce_product/static/src/js/material.min.js',
+            # Odoo 19: Interactions (sustituyen a los antiguos odoo.define/publicWidget
+            # de static/src/js/, que ya no se cargan)
+            'ecommerce_product/static/src/interactions/website_sale_patch.js',
+            'ecommerce_product/static/src/interactions/open_pack.js',
+        ],
+    },
 }

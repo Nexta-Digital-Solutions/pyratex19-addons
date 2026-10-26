@@ -19,6 +19,7 @@ class OpenPack(models.Model):
                 'id': record.id,
                 'name': record.name,
                 'price': record.price,
+                'elements_number': record.elements_number,
             }
             result.append(values)
 
