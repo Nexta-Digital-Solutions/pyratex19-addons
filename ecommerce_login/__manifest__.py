@@ -39,14 +39,13 @@
         'views/res_partner.xml'
     ],
     
-    # 'assets': {
-    #     'web.assets_frontend': [
-    #         'ecommerce_login/static/src/js/vue@2.7.14.js',
-    #         'ecommerce_login/static/src/js/vue_instance.js',
-    #         'ecommerce_login/static/src/scss/signature.scss',
-    #         'ecommerce_login/static/src/js/jquery.serializejson.min.js',
-    #         'ecommerce_login/static/src/scss/loader.scss'
-    #     ]
-    # },
+    'assets': {
+        'web.assets_frontend': [
+            # Odoo 19: Vue 2, jQuery.serializeJSON y vue_instance.js ya no son necesarios
+            'ecommerce_login/static/src/interactions/complete_profile.js',
+            'ecommerce_login/static/src/scss/signature.scss',
+            'ecommerce_login/static/src/scss/loader.scss',
+        ],
+    },
     # 'post_init_hook': 'post_init_hook'
 }

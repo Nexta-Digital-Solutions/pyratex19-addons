@@ -4,14 +4,17 @@
         <xpath expr="//div[@id='wsale_products_attributes_collapse']" position="replace">
             <!--            <form t-if="attributes" class="js_attributes position-relative mb-2" method="get">-->
             <!--            <form class="js_attributes position-relative mb-2" method="get">-->
-            <form class="position-relative mb-2">
-                <div t-attf-class="input-group #{_classes}" role="search" style="display: flex; align-items: center;">
+            <!-- Odoo 19: el formulario envía a la categoría/tienda actual sin paginación;
+                 los filtros los aplica controllers/website_sale_products.py -->
+            <form class="position-relative mb-2" method="get"
+                  t-att-action="('%s/category/%s' % (shop_path, slug(category))) if category else shop_path">
+                <div class="input-group mb-3" role="search" style="display: flex; align-items: center;">
                     <t t-set="search_placeholder">Search...</t>
                     <input type="search" name="search"
-                           t-att-class="'search-query form-control oe_search_box %s' % _input_classes"
+                           class="search-query form-control oe_search_box"
                            t-att-placeholder="placeholder if placeholder else search_placeholder" t-att-value="search"
                            style="flex: 1;margin:0 !important"/>
-                    <button type="submit" t-att-class="'btn oe_search_button %s' % (_submit_classes or 'btn-primary')"
+                    <button type="submit" class="btn oe_search_button btn-primary"
                             aria-label="Search" title="Search" style="flex-shrink: 0;">
                         <i class="oi oi-search"/>
                         <span t-if="search" class="oe_search_found">
@@ -260,8 +263,8 @@
                     <button name="filter" class="js_attributes mr-2 h-100 w-100 btn btn-primary mr-1"
                             style="background-color: grey; color: white; border-radius: 5px;font-family:sans-serif !important">Filter
                     </button>
-                    <a t-att-href="keep('/shop'+ ('/category/'+slug(category)) if category else None, attrib=0)"
-                       t-attf-class="btn btn-{{navClass}} w-100"
+                    <a t-att-href="('%s/category/%s' % (shop_path, slug(category))) if category else shop_path"
+                       class="btn btn-secondary w-100"
                        style="background-color: grey; color: white; border-radius: 5px;font-family:sans-serif !important">
                         <small class="mx-auto">
                             <b>Clear Filters</b>
