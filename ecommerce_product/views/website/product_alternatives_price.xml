@@ -1,19 +1,16 @@
 <odoo>
-    <data>
-        <template id="website_sale.price_dynamic_filter_template_product_product" name="Dynamic Product Filter Price">
-            <t t-set="record_price" t-value="record._get_contextual_price_tax_selection()"/>
-            <t t-if="not website.prevent_zero_price_sale or record_price">
-                <t t-if = "user_id.partner_id.name != 'Public user'">
-                    <span t-esc="record_price" class="fw-bold"
-                        t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
-                    <del t-if="data.get('has_discounted_price')" class="text-danger ms-1 h6" style="white-space: nowrap;"
-                        t-esc="data['list_price']"
-                        t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
-                </t>
-            </t>
-            <t t-else="">
-                <span t-field="website.prevent_zero_price_sale_text"/>
-            </t>
-        </template>
-    </data>
-</odoo>  
+    <!--
+        Odoo 19: oculta el precio en los snippets dinámicos de productos
+        (productos alternativos, vistos recientemente...) a los usuarios no identificados.
+
+        La versión anterior redefinía entera la plantilla de website_sale con el mismo
+        id, lo que la sobrescribía con código de una versión anterior. Ahora se hereda.
+    -->
+    <template id="price_dynamic_filter_template_product_product_custom"
+              inherit_id="website_sale.price_dynamic_filter_template_product_product"
+              name="Dynamic Product Filter Price: hide for public users">
+        <xpath expr="//t[@t-if]" position="attributes">
+            <attribute name="t-if">not data.get('prevent_zero_price_sale') and not data.get('is_sample') and not user_id._is_public()</attribute>
+        </xpath>
+    </template>
+</odoo>
