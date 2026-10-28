@@ -46,7 +46,7 @@
             <t t-set="open_pack" t-value="env['open.pack'].sudo().search([])"/>
             <t t-if="open_pack">
                 <span t-esc="openpack_set" class="d-none"/>
-                <div t-if="producttype_set == 3 and not user_id.partner_id.name == 'Public user'" class="row align-items-center">
+                <div t-if="producttype_set == 3 and not user_id._is_public()" class="row align-items-center">
                     <div id="text-packsize" class="cold-md-2">
                         <span>Please, select your pack size:</span>
                     </div>

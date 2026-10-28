@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Add clear cart button -->
-    <template id="clear_cart_inherited" inherit_id="website_sale.cart" active="True" customize_show="True"
-              name="Clear Cart">
-        <xpath expr="//div[hasclass('oe_cart')]//a[hasclass('btn-secondary')]" position="after">
-            <t t-set="website_sale_order" t-value="website.cart"/>
-            <a t-if="website_sale_order and website_sale_order.website_order_line" href="/shop/clear/cart"
-               class="btn btn-primary ml16" style="vertical-align: top;"><i class="fa fa-trash mr8"></i>Cart Pack
+    <!--
+        Odoo 19: botón para vaciar del carrito las muestras (Swatches).
+        En Odoo 19 el carrito ya no tiene el botón "Continue shopping" en el que
+        se apoyaba la versión anterior; el botón se coloca junto a "Order summary".
+        La ruta /shop/clear/cart está en controllers/website_cart_packs.py.
+    -->
+    <template id="clear_cart_inherited" inherit_id="website_sale.cart" name="Clear Cart">
+        <xpath expr="//div[@id='shop_cart']/div[1]" position="inside">
+            <a t-if="website_sale_order and website_sale_order.website_order_line"
+               href="/shop/clear/cart" class="btn btn-primary btn-sm ms-auto">
+                <i class="fa fa-trash me-2"/>Cart Pack
             </a>
         </xpath>
     </template>

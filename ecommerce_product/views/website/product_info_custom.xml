@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+        Odoo 19: bloque de información técnica de la ficha de producto
+        (antes en product_custom.xml, cuyos xpaths ya no existen en Odoo 19).
+        Muestra peso, ancho, estructura, composición, propiedades,
+        certificaciones, instrucciones de cuidado (iconos) y país de fabricación.
+    -->
+    <template id="product_info_custom" inherit_id="website_sale.product" name="Pyratex: product information">
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_price')]" position="after">
+            <t t-if="not user_id._is_public()">
+                <div class="o_wsale_product_details_content_section mb-4" id="pyratex_product_info">
+                    <div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+                        <div style="width: 20%;">
+                            <ul t-if="'x_studio_weight' in product._fields and product.x_studio_weight &gt; 0.0"
+                                style="list-style: none;" class="ps-0">
+                                <li><strong>Weight</strong></li>
+                                <p>
+                                    <span t-field="product.x_studio_weight"/>
+                                    <span>gsm</span>
+                                </p>
+                            </ul>
+                            <ul t-if="product.width &gt; 0.0" style="list-style: none;" class="ps-0">
+                                <li><strong>Width</strong></li>
+                                <p>
+                                    <span t-field="product.width"/>
+                                    <span>cm</span>
+                                </p>
+                            </ul>
+                            <ul t-if="product.structure_id" style="list-style: none;" class="ps-0">
+                                <li><strong>Structure</strong></li>
+                                <p t-field="product.structure_id"/>
+                            </ul>
+                            <ul t-if="product.composition_id" style="list-style: none;" class="ps-0">
+                                <li><strong>Composition</strong></li>
+                                <div class="d-flex flex-wrap">
+                                    <t t-foreach="product.composition_id" t-as="composition">
+                                        <p t-field="composition.name" class="p-1 mb-0"/>
+                                    </t>
+                                </div>
+                            </ul>
+                        </div>
+                        <div style="width: 50%;">
+                            <ul t-if="product.property_id" style="list-style: none;" class="ps-0">
+                                <li><strong>Properties</strong></li>
+                                <div class="d-flex flex-wrap align-items-start">
+                                    <t t-foreach="product.property_id" t-as="property">
+                                        <img t-if="property.image" t-att-src="image_data_uri(property.image)"
+                                             t-att-alt="property.name" style="width: 5%; height: auto;"/>
+                                        <p t-field="property.name" class="p-1"/>
+                                    </t>
+                                </div>
+                            </ul>
+                        </div>
+                        <div style="width: 25%; margin: 0 auto; text-align: center;">
+                            <t t-foreach="product.certification_id" t-as="certification">
+                                <img t-if="certification.image" class="p-1"
+                                     t-att-src="image_data_uri(certification.image)"
+                                     t-att-alt="certification.name"/>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Instrucciones de cuidado: iconos del campo image de care.instructions -->
+                    <div t-if="product.careinstructions_id" class="d-flex flex-wrap" id="pyratex_care_instructions">
+                        <t t-foreach="product.careinstructions_id" t-as="care">
+                            <img t-if="care.image" class="p-1 w-25 h-auto"
+                                 style="max-width: 50px; max-height: 50px;"
+                                 t-att-src="image_data_uri(care.image)"
+                                 t-att-alt="care.name" t-att-title="care.name"/>
+                        </t>
+                    </div>
+
+                    <h5 t-if="product.country_id" class="text-primary mt-2">
+                        Made in
+                        <span t-field="product.country_id"/>
+                    </h5>
+                </div>
+            </t>
+            <div t-else="" class="o_wsale_product_details_content_section mb-4">
+                <p>For more information, <a href="/web/login">Sign in</a>.</p>
+            </div>
+        </xpath>
+    </template>
+</odoo>

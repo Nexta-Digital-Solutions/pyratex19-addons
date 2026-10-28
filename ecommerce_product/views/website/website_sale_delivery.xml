@@ -1,16 +1,8 @@
-    <odoo>
-    
-        <template id="cart_delivery_border" name="Delivery Costs" inherit_id="website_sale.total">
-            <xpath expr="//tr[@id='o_order_delivery']" position="replace">
-                <tr id="o_order_delivery" style="border-bottom:1pt solid #dee2e6;" t-if="website_sale_order and website_sale_order.carrier_id">
-                    <td class="text-end border-0 text-muted"  title="Delivery will be updated after choosing a new delivery method">Delivery:</td>
-                    <td class="text-xl-end border-0 text-muted" >
-                        <span t-field="website_sale_order.amount_delivery" class="monetary_field" style="white-space: nowrap;" t-options='{
-                            "widget": "monetary",
-                            "display_currency": website_sale_order.currency_id,
-                        }'/>
-                    </td>
-                </tr>
-            </xpath>
-        </template>
-    </odoo>
+<odoo>
+    <!-- Odoo 19: línea separadora bajo los gastos de envío en el resumen del carrito -->
+    <template id="cart_delivery_border" name="Delivery Costs" inherit_id="website_sale.total">
+        <xpath expr="//tr[@name='o_order_delivery']" position="attributes">
+            <attribute name="style">border-bottom:1pt solid #dee2e6;</attribute>
+        </xpath>
+    </template>
+</odoo>
