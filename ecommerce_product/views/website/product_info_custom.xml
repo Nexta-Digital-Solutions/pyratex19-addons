@@ -46,17 +46,22 @@
                                 <div class="d-flex flex-wrap align-items-start">
                                     <t t-foreach="product.property_id" t-as="property">
                                         <img t-if="property.image" t-att-src="image_data_uri(property.image)"
-                                             t-att-alt="property.name" style="width: 5%; height: auto;"/>
+                                             t-att-alt="property.name"
+                                             style="width: 5%; height: auto; max-height: 40px; object-fit: contain;"/>
                                         <p t-field="property.name" class="p-1"/>
                                     </t>
                                 </div>
                             </ul>
                         </div>
-                        <div style="width: 25%; margin: 0 auto; text-align: center;">
+                        <!-- Certificaciones: logos limitados en tamaño (antes se mostraban
+                             a su tamaño real y algunos ocupaban media página) -->
+                        <div style="width: 25%; margin: 0 auto; text-align: center;"
+                             class="d-flex flex-wrap justify-content-center align-items-center gap-2">
                             <t t-foreach="product.certification_id" t-as="certification">
-                                <img t-if="certification.image" class="p-1"
+                                <img t-if="certification.image" class="p-1 img-fluid"
+                                     style="max-height: 80px; max-width: 100%; width: auto; object-fit: contain;"
                                      t-att-src="image_data_uri(certification.image)"
-                                     t-att-alt="certification.name"/>
+                                     t-att-alt="certification.name" t-att-title="certification.name"/>
                             </t>
                         </div>
                     </div>
