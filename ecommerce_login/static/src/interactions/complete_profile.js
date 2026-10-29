@@ -27,6 +27,7 @@ export class CompleteProfileMnda extends Interaction {
         },
         "#flexCheckDefault": { "t-on-change": this.onToggleBillingAddress },
         "#about_us_select": { "t-on-change": this.onChangeAboutUs },
+        "#country": { "t-on-change": this.onChangeCountry },
         "#modal_save": { "t-on-click.prevent": this.locked(this.onClickSaveMnda) },
         "#btn_close_process_complete": { "t-on-click.prevent": this.onClickCloseComplete },
         "#signature-pad": {
@@ -108,6 +109,14 @@ export class CompleteProfileMnda extends Interaction {
         });
     }
 
+    onChangeCountry(ev) {
+        // La dirección de facturación usa por defecto el mismo país
+        const invoiceCountry = this.el.querySelector("#invoice_country");
+        if (invoiceCountry) {
+            invoiceCountry.value = ev.currentTarget.value;
+        }
+    }
+
     onChangeAboutUs(ev) {
         const otherReason = this.el.querySelector("#other_reason");
         if (otherReason) {
@@ -134,6 +143,11 @@ export class CompleteProfileMnda extends Interaction {
             }
         }
         body.append("img", signature);
+        // Odoo 19: la ruta valida el token CSRF
+        const csrfInput = this.el.querySelector('input[name="csrf_token"]');
+        if (csrfInput) {
+            body.append("csrf_token", csrfInput.value);
+        }
 
         const loader = this._getModal("#modal_loader");
         loader?.show();

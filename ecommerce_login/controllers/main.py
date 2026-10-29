@@ -1,174 +1,195 @@
-import logging
-import werkzeug
-from werkzeug.urls import url_encode
+# -*- coding: utf-8 -*-
+"""Registro de clientes de la tienda con firma del MNDA (Odoo 19).
 
-from odoo import http, tools, _
-from odoo.addons.auth_signup.models.res_users import SignupError
-from odoo.addons.web.controllers.home import ensure_db, Home, SIGN_UP_REQUEST_PARAMS, LOGIN_SUCCESSFUL_PARAMS
-from odoo.addons.base_setup.controllers.main import BaseSetup
-from odoo.exceptions import UserError
+Flujo:
+1. /web/signup (sin token) muestra el formulario "Complete your profile".
+2. El cliente rellena sus datos, firma el MNDA en el modal y pulsa "Next".
+3. /web/signup/saveMldna crea la empresa, el contacto, la dirección de facturación
+   y el usuario portal, genera el PDF del MNDA firmado en Documentos y envía al
+   cliente el correo para establecer su contraseña.
+
+Los enlaces con token (invitación / establecer contraseña) siguen usando el
+formulario estándar de Odoo.
+"""
+import logging
+
+from odoo import _, http
+from odoo.fields import Command
 from odoo.http import request
-import json
+from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 
 _logger = logging.getLogger(__name__)
 
-LOGIN_SUCCESSFUL_PARAMS.add('account_created')
+# Comercial que se asigna a los contactos creados desde la web
+# (en la versión anterior estaba fijo a 10). Configurable con el parámetro
+# del sistema "ecommerce_login.salesperson_id".
+DEFAULT_SALESPERSON_ID = 10
 
 
-class AuthSignupHome(Home):
-    @http.route('/web/signup', type='http', auth='public', website=True, sitemap=False)
+def _to_int(value):
+    try:
+        return int(value or 0) or False
+    except (TypeError, ValueError):
+        return False
+
+
+class AuthSignupHomeMnda(AuthSignupHome):
+
+    @http.route()
     def web_auth_signup(self, *args, **kw):
         qcontext = self.get_auth_signup_qcontext()
+        # Enlaces con token (invitación, establecer contraseña) y envíos del
+        # formulario estándar: comportamiento normal de Odoo.
+        if qcontext.get('token') or request.httprequest.method == 'POST':
+            return super().web_auth_signup(*args, **kw)
+        if not qcontext.get('signup_enabled'):
+            return super().web_auth_signup(*args, **kw)
+        return request.render('ecommerce_login.complete_your_profile')
 
-        if not qcontext.get('token') and not qcontext.get('signup_enabled'):
-            raise werkzeug.exceptions.NotFound()
-
-        if 'error' not in qcontext:
-        #and request.httprequest.method == 'POST':
-            try:
-                #self.do_signup(qcontext)
-                if qcontext.get('token'):
-                    User = request.env['res.users']
-                    user_sudo = User.sudo().search(
-                        User._get_login_domain(qcontext.get('login')), order=User._get_login_order(), limit=1
-                    )
-                    template = request.env.ref('auth_signup.mail_template_user_signup_account_created',
-                                               raise_if_not_found=False)
-                    if user_sudo and template:
-                        template.sudo().send_mail(user_sudo.id, force_send=True)
-                return request.render('ecommerce_login.complete_your_profile')  # renderiza la vista
-                # return request.redirect('/web/complete_profile')
-            except UserError as e:
-                qcontext['error'] = e.args[0]
-            except (SignupError, AssertionError) as e:
-                if request.env["res.users"].sudo().search([("login", "=", qcontext.get("login"))]):
-                    qcontext["error"] = _("Another user is already registered using this email address.")
-                else:
-                    _logger.error("%s", e)
-                    qcontext['error'] = _("Could not create a new account.")
-
-        elif 'signup_email' in qcontext:
-            user = request.env['res.users'].sudo().search(
-                [('email', '=', qcontext.get('signup_email')), ('state', '!=', 'new')], limit=1)
-            if user:
-                return request.redirect('/web/login?%s' % url_encode({'login': user.login, 'redirect': '/web'}))
-
-        response = request.render('auth_signup.signup', qcontext)
-        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-        response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
-        return response
-
-    # Método para recibir los datos del formulario
-    @http.route('/web/complete_profile', type='http', auth='public', website=True, methods=['POST'])
+    @http.route('/web/complete_profile', type='http', auth='public', website=True, methods=['GET', 'POST'], sitemap=False)
     def complete_profile(self, **post):
         return request.render('ecommerce_login.complete_your_profile')
-    
-    @http.route('/web/signup/saveMldna', type='http', auth='public', website=True, sitemap=False, csrf = False)
-    def web_saveDLNA(self, **post):
-        params = post
-        signature = params.get('img')
-        company_id = self.createCompanyDLNA(params)
-        partner_id = self.createContactDLNA(params, signature, company_id)
-        invoice_id = self.createInvoiceDLNA(params,company_id, partner_id)
-        if (partner_id): 
-            try:       
-                user_id = self.createUserDLNA(params, partner_id)
-                user_id.action_reset_password()
-            except:
-                pass
-            doc_id = partner_id.createDocumentMDNA(partner_id, params, signature)
-            if (doc_id):
-                partner_id.sudo().update ({
-                    'x_studio_mnda_signed': 'Yes'
-                })
-        else:
-            return request.redirect('/web/login')
 
-    def createUserDLNA(self, data, parent_id):
-        name = ' '.join([data.get('data[name]'), data.get('data[lastname]')])
-        email = data.get('data[email]')
-        user_data = {
-            'name': name,
+    @http.route('/web/signup/saveMldna', type='http', auth='public', website=True, methods=['POST'], sitemap=False)
+    def web_saveDLNA(self, **post):
+        """Recibe el formulario (data[campo]=valor) y la firma (img=dataURL)."""
+        data = {key[5:-1]: value for key, value in post.items() if key.startswith('data[') and key.endswith(']')}
+        signature = post.get('img')
+        if not data.get('email') or not data.get('name'):
+            return request.make_json_response({'error': _("Missing required data.")}, status=400)
+        try:
+            company = self.createCompanyDLNA(data)
+            partner = self.createContactDLNA(data, signature, company)
+            self.createInvoiceDLNA(data, company, partner)
+            user = self.createUserDLNA(data, partner)
+        except Exception:
+            _logger.exception("MNDA signup: error creating the customer %s", data.get('email'))
+            request.env.cr.rollback()
+            return request.make_json_response({'error': _("Could not create your account.")}, status=500)
+
+        try:
+            document = partner.createDocumentMDNA(partner, data, signature)
+            if document and 'x_studio_mnda_signed' in partner._fields:
+                partner.sudo().x_studio_mnda_signed = 'Yes'
+        except Exception:
+            # El cliente queda registrado aunque falle la generación del PDF.
+            _logger.exception("MNDA signup: error generating the MNDA for %s", data.get('email'))
+
+        try:
+            # Correo para que el cliente establezca su contraseña
+            user.sudo().action_reset_password()
+        except Exception:
+            _logger.exception("MNDA signup: error sending the invitation to %s", data.get('email'))
+
+        return request.make_json_response({'success': True})
+
+    # ------------------------------------------------------------------
+    # Creación de registros
+    # ------------------------------------------------------------------
+
+    def createUserDLNA(self, data, partner):
+        email = (data.get('email') or '').strip()
+        Users = request.env['res.users'].sudo()
+        user = Users.with_context(active_test=False).search([('login', '=', email)], limit=1)
+        if user:
+            return user
+        user_values = {
+            'name': partner.name,
             'login': email,
-            'sel_groups_1_9_10': 9,
-            'partner_id': parent_id.id,
-            'mobile': data.get('data[phone]'),
-            'street': data.get('data[address1]'),
-            'street2': data.get('data[address2]'),
-            'zip': data.get('data[postalcode]'),
-            'city': data.get('data[city]'),
-            'state': False,
-            'country_id':  int(data.get('data[country]')),
-            'function': data.get('data[position]')     
+            'email': email,
+            'partner_id': partner.id,
+            'group_ids': [Command.set([request.env.ref('base.group_portal').id])],
+            'phone': data.get('phone'),
+            'function': data.get('position'),
         }
-        
-        user = request.env['res.users'].sudo().search([ ('login', '=', email) ])
-        if (not user):
-            user = request.env['res.users'].sudo().create( user_data )
-        return user
-    
+        # no_reset_password: la invitación se envía una sola vez desde web_saveDLNA
+        return Users.with_context(no_reset_password=True).create(user_values)
+
     def createCompanyDLNA(self, data):
-        company = data.get('data[company]')
-        company_id = request.env['res.partner'].sudo().search([ ('name', '=', company) ], limit = 1)
-        contact = {
-            'company_type': 'company',
-            'name': company,
-            'street': data.get('data[address1]'),
-            'street2': data.get('data[address2]'),
-            'zip': data.get('data[postalcode]'),
-            'country_id':  int(data.get('data[country]')),
-            'city': data.get('data[city]'),
-            'comment': data.get('data[additional_instructions]')
-        } 
-        if (not company_id):
-            company_id = request.env['res.partner'].sudo().create( contact )
-        return company_id     
-     
-    def createContactDLNA(self, data, signature, company_id):
-        name = ' '.join([data.get('data[name]'), data.get('data[lastname]')])
-        email = data.get('data[email]')
-        fiscal_position_id = request.env['account.fiscal.position'].sudo().search([('name','=', 'EU privado')], limit = 1)
-        contact = {
-            'parent_id': company_id.id,
+        name = (data.get('company') or '').strip() or ' '.join(
+            filter(None, [data.get('name'), data.get('lastname')]))
+        Partner = request.env['res.partner'].sudo()
+        company = Partner.search([('name', '=', name), ('is_company', '=', True)], limit=1)
+        if not company:
+            company = Partner.create({
+                'company_type': 'company',
+                'name': name,
+                'street': data.get('address1'),
+                'street2': data.get('address2'),
+                'zip': data.get('postalcode'),
+                'city': data.get('city'),
+                'country_id': _to_int(data.get('country')),
+                'phone': data.get('phone'),
+                'comment': data.get('additional_instructions'),
+            })
+        return company
+
+    def createContactDLNA(self, data, signature, company):
+        name = ' '.join(filter(None, [data.get('name'), data.get('lastname')]))
+        email = (data.get('email') or '').strip()
+        Partner = request.env['res.partner'].sudo()
+        partner = Partner.search([('email', '=', email)], limit=1)
+        if partner:
+            return partner
+
+        values = {
+            'parent_id': company.id,
             'company_type': 'person',
             'type': 'contact',
-            'street': company_id.street,
-            'street2': company_id.street2,
-            'city': company_id.city,
-            'zip': company_id.zip,
-            'country_id': company_id.country_id.id,
+            'street': company.street,
+            'street2': company.street2,
+            'city': company.city,
+            'zip': company.zip,
+            'country_id': company.country_id.id,
             'name': name,
             'email': email,
-            'profession': data.get('data[profession]'),
-            'about_us': data.get('data[about_us]'),
-            'user_id': 10
+            'phone': data.get('phone'),
+            'function': data.get('position'),
         }
-        
-        partner_id = request.env['res.partner'].sudo().search([ ('email', '=', email) ], limit = 1)
-        if (not partner_id):
-            partner_id = request.env['res.partner'].sudo().create( contact )
-            partner_id.update ({ 'property_account_position_id': fiscal_position_id.id if fiscal_position_id else False })
-        return partner_id
-        
-    def createInvoiceDLNA(self, data, company_id, partner_id):
-        invoice_name =  data.get('data[invoice_name]')
-        if (not invoice_name):
-            return
-        
-        name = ' '.join([data.get('data[invoice_name]'), data.get('data[invoice_lastname]')])
-        invoice_address = {
-            'name': name,
-            'parent_id': company_id.id,
-            'company_type': 'person',
-            'type': 'invoice',
-            'street': data.get('data[invoice_address1]'),
-            'street2': data.get('data[invoice_address2]'),
-            'city': data.get('data[invoice_city]'),
-            'zip': data.get('data[invoice_postalcode]'),
-            'country_id':  int(data.get('data[invoice_country]')),
-            'comment': data.get('data[invoice_additional]')
-        }
-        partner_id = request.env['res.partner'].sudo().search([ ('name', 'ilike', name) ], limit = 1)
-        if (not partner_id):
-           partner_id = request.env['res.partner'].sudo().create( invoice_address )
-        return partner_id
+        profession = data.get('profession')
+        if profession and profession in dict(Partner._fields['profession'].selection):
+            values['profession'] = profession
+        about_us = data.get('about_us')
+        if about_us and about_us in dict(Partner._fields['about_us'].selection):
+            values['about_us'] = about_us
+        if about_us == 'other' and data.get('other_reason'):
+            values['comment'] = _("How did you hear about us: %s", data.get('other_reason'))
+
+        salesperson_id = _to_int(request.env['ir.config_parameter'].sudo().get_param(
+            'ecommerce_login.salesperson_id', DEFAULT_SALESPERSON_ID))
+        salesperson = request.env['res.users'].sudo().browse(salesperson_id).exists() if salesperson_id else False
+        if salesperson:
+            values['user_id'] = salesperson.id
+
+        partner = Partner.create(values)
+        fiscal_position = request.env['account.fiscal.position'].sudo().search(
+            [('name', '=', 'EU privado')], limit=1)
+        if fiscal_position:
+            partner.property_account_position_id = fiscal_position
+        return partner
+
+    def createInvoiceDLNA(self, data, company, partner):
+        if not data.get('invoice_name'):
+            return request.env['res.partner']
+        name = ' '.join(filter(None, [data.get('invoice_name'), data.get('invoice_lastname')]))
+        Partner = request.env['res.partner'].sudo()
+        invoice_address = Partner.search([
+            ('parent_id', '=', company.id),
+            ('type', '=', 'invoice'),
+            ('name', '=', name),
+        ], limit=1)
+        if not invoice_address:
+            invoice_address = Partner.create({
+                'name': name,
+                'parent_id': company.id,
+                'company_type': 'person',
+                'type': 'invoice',
+                'phone': data.get('invoice_phone'),
+                'street': data.get('invoice_address1'),
+                'street2': data.get('invoice_address2'),
+                'city': data.get('invoice_city'),
+                'zip': data.get('invoice_postalcode'),
+                'country_id': _to_int(data.get('invoice_country')),
+                'comment': data.get('invoice_additional'),
+            })
+        return invoice_address

@@ -62,3 +62,15 @@ body {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
 }
+
+/* Pantallas de acceso (login, registro, restablecer contraseña): enlaces en gris */
+#wrapwrap .oe_login_form a:not(.btn),
+#wrapwrap .oe_signup_form a:not(.btn),
+#wrapwrap .oe_reset_password_form a:not(.btn) {
+    color: #6c757d !important;
+}
+#wrapwrap .oe_login_form a:not(.btn):hover,
+#wrapwrap .oe_signup_form a:not(.btn):hover,
+#wrapwrap .oe_reset_password_form a:not(.btn):hover {
+    color: #343a40 !important;
+}

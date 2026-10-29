@@ -29,6 +29,7 @@
         'views/odoo/product_attribute_view_form_custom.xml',
         # 'views/odoo/product_template_only_form_view_custom.xml',
         'views/odoo/product_normal_form_view_custom.xml',
+        'views/odoo/product_product_published_view.xml',
         'views/odoo/fiber_family_view.xml',
         'views/odoo/color_group_view.xml',
         'views/odoo/properties_view.xml',
