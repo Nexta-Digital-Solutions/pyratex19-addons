@@ -63,6 +63,8 @@
         'views/website/auth_sign_login_templates.xml',
         # 'views/website/product_alternative.xml',
         'views/website/website_sale_delivery.xml',
+        'views/website/header_custom.xml',
+        'views/website/variants_custom.xml',
         'data/cron.xml'
 
     ],

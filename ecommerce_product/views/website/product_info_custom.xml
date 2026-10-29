@@ -76,14 +76,17 @@
                         </t>
                     </div>
 
-                    <h5 t-if="product.country_id" class="text-primary mt-2">
+                    <h5 t-if="product.country_id" class="mt-2" style="color: #6c757d;">
                         Made in
                         <span t-field="product.country_id"/>
                     </h5>
+
+                    <!-- Productos sin precio (muestras): el precio está oculto, pero se indica igualmente el IVA -->
+                    <p t-if="not combination_info['price']" class="mt-2 mb-0">Not including 21% VAT</p>
                 </div>
             </t>
             <div t-else="" class="o_wsale_product_details_content_section mb-4">
-                <p>For more information, <a href="/web/login">Sign in</a>.</p>
+                <p>For more information, <a href="/web/login" class="pyratex_signin_link" style="color: #6c757d; text-decoration: underline;">Sign in</a>.</p>
             </div>
         </xpath>
     </template>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Cabecera de la web: se ocultan el texto con el teléfono y el buscador.
+        Son opciones estándar de la cabecera de Odoo 19; también se pueden volver
+        a activar desde el editor de la web (Cabecera > Elementos).
+    -->
+    <record id="website.header_text_element" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="website.header_search_box" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

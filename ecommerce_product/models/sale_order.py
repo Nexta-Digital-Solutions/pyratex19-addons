@@ -35,6 +35,56 @@ class SaleOrder(models.Model):
     def _get_delivery_methods(self):
         return self.env['delivery.carrier'].sudo().search([('website_published', '=', True)])
 
+    # ------------------------------------------------------------------
+    # Carrito web (Odoo 19): al quitar un pack, quitar también sus muestras
+    # ------------------------------------------------------------------
+
+    def _cart_update_order_line(self, order_line, quantity, **kwargs):
+        """Al eliminar del carrito un pack cerrado o el "Open Pack", elimina también
+        las líneas de muestras que lo acompañan (antes lo hacía la ruta
+        /shop/cart/update_json, que ya no existe en Odoo 19).
+
+        - Pack cerrado (OCA sale_product_pack): sus líneas hijas (pack_parent_line_id).
+          OCA solo las borra al editar el pedido desde el backend, no desde la web.
+        - Open Pack: las líneas de muestras (Swatches) añadidas a 0 € sin pack padre.
+        """
+        lines_to_remove = self.env['sale.order.line']
+        if quantity <= 0 and order_line:
+            lines_to_remove = self._get_pack_lines_to_remove(order_line)
+        res = super()._cart_update_order_line(order_line, quantity, **kwargs)
+        if lines_to_remove:
+            lines_to_remove.exists().unlink()
+        return res
+
+    def _get_pack_lines_to_remove(self, order_line):
+        self.ensure_one()
+        SaleOrderLine = self.env['sale.order.line']
+        product = order_line.product_id
+        swatch_lines = self.order_line.filtered(
+            lambda line: line != order_line
+            and line.product_id.producttype_id.name == 'Swatches'
+        )
+        has_pack_hierarchy = 'pack_parent_line_id' in SaleOrderLine._fields
+
+        if product.name == 'Open Pack':
+            if has_pack_hierarchy:
+                swatch_lines = swatch_lines.filtered(lambda line: not line.pack_parent_line_id)
+            return swatch_lines.filtered(lambda line: not line.price_unit)
+
+        if 'pack_ok' in product._fields and product.pack_ok:
+            if has_pack_hierarchy:
+                children = SaleOrderLine.search([
+                    ('id', 'child_of', order_line.id),
+                    ('id', '!=', order_line.id),
+                ])
+                if children:
+                    return children
+            # Packs sin líneas hijas enlazadas: comportamiento anterior
+            # (quitar las muestras a 0 € del carrito).
+            return swatch_lines.filtered(lambda line: not line.price_unit)
+
+        return SaleOrderLine
+
     def _create_invoices(self, grouped=False, final=False, date=None):
         """ Create invoice(s) for the given Sales Order(s).
 

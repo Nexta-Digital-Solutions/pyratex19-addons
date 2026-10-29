@@ -47,8 +47,8 @@
             <t t-if="open_pack">
                 <span t-esc="openpack_set" class="d-none"/>
                 <div t-if="producttype_set == 3 and not user_id._is_public()" class="row align-items-center">
-                    <div id="text-packsize" class="cold-md-2">
-                        <span>Please, select your pack size:</span>
+                    <div id="text-packsize" class="col-12">
+                        <span>Please, select your pack size. Please note that the price does not include 21% VAT, it will be added at checkout. When you have finished selecting all the swatches, click on "Add to Cart".</span>
                     </div>
                     <div class="col-md-3" >
                         <select class="css_attribute_select mb-2" id="select-openpack" name="openpack">
