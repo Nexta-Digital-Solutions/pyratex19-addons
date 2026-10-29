@@ -12,6 +12,18 @@ class ProductProduct(models.Model):
 
     colorgroup_id = fields.Many2one('color.group', string='Color Groups', readonly=False)
 
+    # Publicación de cada variante en la web (Odoo estándar solo publica la
+    # plantilla y las variantes heredan ese valor). Este campo propio de la
+    # variante decide qué variantes (colores) se ven en la tienda.
+    is_published = fields.Boolean(
+        string='Is Published',
+        default=True,
+        copy=False,
+        index=True,
+        help="Si está desmarcado, esta variante no se muestra en la web "
+             "(círculos de color de la tienda y selector de la ficha) ni se puede añadir al carrito.",
+    )
+
 
     @api.onchange('colorgroup_id')
     def _onchange_colorgroup_id(self):
@@ -31,5 +43,8 @@ class ProductProduct(models.Model):
     
     def _is_add_to_cart_allowed(self):
         self.ensure_one()
-        return self.env.user.has_group('base.group_system') or (self.active and self.sale_ok)
+        # Las variantes no publicadas solo las pueden añadir los usuarios internos
+        # (que las ven en la web, como en Odoo 17).
+        return self.env.user.has_group('base.group_system') or (
+            self.active and self.sale_ok and (self.is_published or self.env.user._is_internal()))
  

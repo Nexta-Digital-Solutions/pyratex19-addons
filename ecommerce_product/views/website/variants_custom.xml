@@ -2,11 +2,12 @@
 <odoo>
     <!--
         Odoo 19: selector de variantes de la ficha de producto.
-        Solo se ofrecen los valores (p. ej. colores) de las variantes con stock.
+        Solo se ofrecen los valores (p. ej. colores) de las variantes publicadas
+        (campo is_published de la variante).
         Sustituye a variants_selector.xml / attributes_filter_view.xml de Odoo 17,
         que eran copias del selector antiguo y rompen el JS de Odoo 19.
     -->
-    <template id="variants_custom" inherit_id="website_sale.variants" name="Pyratex: only variants in stock">
+    <template id="variants_custom" inherit_id="website_sale.variants" name="Pyratex: only published variants">
         <xpath expr="//t[@t-set='ptavs']" position="attributes">
             <attribute name="t-value">product._filter_website_visible_ptavs(ptal.product_template_value_ids._only_active())</attribute>
         </xpath>

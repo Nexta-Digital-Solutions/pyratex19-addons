@@ -23,6 +23,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook//page[@name='ecommerce']//group[@name='fields_ecommerce']" position="inside">
                 <field name="colorgroup_id"/>
+                <field name="is_published" string="Variant Published" widget="boolean_toggle"/>
             </xpath>
         </field>
     </record>

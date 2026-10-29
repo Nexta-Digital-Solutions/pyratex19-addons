@@ -51,7 +51,7 @@
                             <div>
                                 <t t-set="countries" t-value="env['res.country'].sudo().search([])"/>
                                 <t t-if="countries">
-                                    <select class="form-select css_attribute_select mb-2" name="country" id="country" onchange = "$('#invoice_country').val($(this).val())" >
+                                    <select class="form-select css_attribute_select mb-2" name="country" id="country" >
                                         <t t-foreach="countries.filtered(lambda x: x.show_website == True)" t-as="country">
                                             <t t-if="country.name=='Spain'"><option t-att-value="country.id" t-esc="country.name" selected="selected" /></t>
                                             <t t-if="country.name!='Spain'"><option t-att-value="country.id" t-esc="country.name" /></t>
