@@ -2,17 +2,26 @@
 <odoo>
     <!--
         Odoo 19: precio de la ficha de producto.
-        - Oculto para usuarios no identificados.
+        - Oculto para usuarios no identificados (también el precio por unidad, p. ej. "12.40 € / m").
+        - No se muestra un precio de 0 € (muestras): en ese caso la nota de IVA aparece
+          en el bloque de información técnica (product_info_custom.xml).
         - Añade el texto "Not including 21% VAT" junto al precio.
         Se mantienen las clases oe_price / oe_default_price, que el JS de Odoo
         actualiza al cambiar de variante.
     -->
     <template id="product_price_custom" inherit_id="website_sale.product_price" name="Product Price Custom">
         <xpath expr="//div[@name='product_price_container']" position="attributes">
-            <attribute name="t-if">not user_id._is_public()</attribute>
+            <attribute name="t-if">not user_id._is_public() and combination_info['price']</attribute>
         </xpath>
         <xpath expr="//div[@name='product_price_container']/span[hasclass('oe_price')]" position="after">
             <span class="text-muted small ms-2">Not including 21% VAT</span>
+        </xpath>
+    </template>
+
+    <!-- Sección del precio de la ficha (incluye el precio por unidad): oculta para usuarios sin cuenta -->
+    <template id="product_price_section_custom" inherit_id="website_sale.product" name="Pyratex: hide price section for public users">
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_price')]" position="attributes">
+            <attribute name="t-if">not is_view_active('website_sale.cta_wrapper_boxed') and not user_id._is_public()</attribute>
         </xpath>
     </template>
 </odoo>

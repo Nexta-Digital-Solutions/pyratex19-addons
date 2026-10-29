@@ -262,3 +262,36 @@ class ProductTemplate(models.Model):
     
     def removeUserOpenPack(self, user_id):
        self.env['user.open.pack'].sudo().search( [('user_id','=', user_id)]).unlink()
+
+    # ------------------------------------------------------------------
+    # Web: solo se muestran las variantes con stock
+    # ------------------------------------------------------------------
+
+    def _get_website_visible_variants(self):
+        """Variantes que se muestran en la web (círculos de color de la tienda y
+        selector de variantes de la ficha): las que tienen stock disponible.
+
+        - Usuarios internos: ven todas las variantes (como antes en Odoo 17).
+        - Productos no almacenables (sin control de stock): todas las variantes.
+        - Si ninguna variante tiene stock se muestran todas, para que el producto
+          siga pudiéndose seleccionar.
+        """
+        self.ensure_one()
+        variants = self.product_variant_ids
+        if self.env.user._is_internal() or not self.sudo().is_storable:
+            return variants
+        in_stock_ids = set(variants.sudo().filtered(lambda p: p.qty_available > 0).ids)
+        return variants.filtered(lambda p: p.id in in_stock_ids) or variants
+
+    def _filter_website_visible_ptavs(self, ptavs):
+        """Quita del selector de la ficha los valores de atributo cuyas variantes
+        no se muestran en la web (ver _get_website_visible_variants).
+        Solo afecta a atributos que crean variantes siempre; los atributos sin
+        variante o dinámicos se dejan como están."""
+        self.ensure_one()
+        if not ptavs.filtered(lambda ptav: ptav.attribute_id.create_variant == 'always'):
+            return ptavs
+        visible_ptavs = self._get_website_visible_variants().product_template_attribute_value_ids
+        return ptavs.filtered(
+            lambda ptav: ptav.attribute_id.create_variant != 'always' or ptav in visible_ptavs
+        )
