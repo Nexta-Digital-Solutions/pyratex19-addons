@@ -26,7 +26,7 @@
         <xpath expr="//div[hasclass('product_price')]" position="replace">
             <!--Muestra los colores del producto-->
             <div style="display:flex; flex-wrap:wrap; ">
-                <!-- Solo variantes con stock (ver product.template._get_website_visible_variants) -->
+                <!-- Solo variantes publicadas (campo is_published de la variante, ver product.template._get_website_visible_variants) -->
                 <t t-foreach="product._get_website_visible_variants()" t-as="variant">
                     <!-- Solo el primer valor con color: si la variante tiene varios valores,
                          leer html_color sobre todos daba "Expected singleton" -->

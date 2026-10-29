@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+        Campo "Is Published" propio de cada variante (product.product.is_published).
+        Decide qué variantes (colores) se muestran en la web.
+    -->
+
+    <!-- Lista de variantes: la columna "Is Published" (de website_sale) pasa a ser
+         visible por defecto y editable con un interruptor -->
+    <record id="product_product_published_tree_view" model="ir.ui.view">
+        <field name="name">product.product.published.tree.view</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="website_sale.product_product_website_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_published']" position="attributes">
+                <attribute name="optional">show</attribute>
+                <attribute name="widget">boolean_toggle</attribute>
+                <attribute name="string">Variant Published</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Formulario rápido de la variante (Producto > Variantes > abrir variante) -->
+    <record id="product_variant_easy_edit_view_published" model="ir.ui.view">
+        <field name="name">product.variant.easy.edit.view.published</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="before">
+                <field name="is_published" string="Variant Published" widget="boolean_toggle"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

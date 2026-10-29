@@ -16,33 +16,53 @@ class ProductTemplate(models.Model):
     certification_id = fields.Many2many('certification', string='Certification')
     composition_id = fields.Many2many('composition', string='Composition')
 
-    def _get_possible_combinations(self, parent_combination=None, necessary_values=None):
-        
+    # ------------------------------------------------------------------
+    # Web: variantes publicadas (campo is_published de product.product)
+    # ------------------------------------------------------------------
+
+    def _website_filters_unpublished_variants(self):
+        """En la web (contexto con website_id) solo se ofrecen las variantes
+        publicadas a clientes y visitantes. Los usuarios internos ven todas
+        (como en Odoo 17). En el backend (pedidos de venta, configurador) no se filtra."""
+        return bool(self.env.context.get('website_id')) and not self.env.user._is_internal()
+
+    def _is_combination_published(self, combination):
+        """True si la variante de esa combinación está publicada.
+        Combinaciones sin variante creada (atributos dinámicos) se consideran publicadas."""
         self.ensure_one()
+        variant = self._get_variant_for_combination(combination)
+        return not variant or variant.is_published
 
-        if not self.active:
-            return _("The product template is archived so no combination is possible.")
-
-        necessary_values = necessary_values or self.env['product.template.attribute.value']
-        necessary_attribute_lines = necessary_values.mapped('attribute_line_id')
-        attribute_lines = self.valid_product_template_attribute_line_ids.filtered(lambda ptal: ptal not in necessary_attribute_lines)
-
-        if not attribute_lines and self._is_combination_possible(necessary_values, parent_combination):
-            yield necessary_values
-
-        product_template_attribute_values_per_line = [
-            ptal.product_template_value_ids._only_active()
-            for ptal in attribute_lines
-        ]
-
-        for partial_combination in self._cartesian_product(product_template_attribute_values_per_line, parent_combination):
-            combination = partial_combination + necessary_values
-            if self._is_combination_possible(combination, parent_combination):
-                if ((self.env.user.has_group('base.group_user')) or \
-                    (combination.ptav_product_variant_ids.is_published and not self.env.user.has_group('base.group_user'))):
-                    yield combination
-
+    def _get_possible_combinations(self, parent_combination=None, necessary_values=None):
+        """Odoo 19: se parte del cálculo estándar y en la web se descartan las
+        combinaciones cuya variante no está publicada. Así la variante que se
+        selecciona por defecto en la ficha es siempre una publicada.
+        (La versión anterior copiaba el método de Odoo 17 y fallaba con productos
+        de varios atributos.)"""
+        combinations = super()._get_possible_combinations(parent_combination, necessary_values)
+        if not self._website_filters_unpublished_variants():
+            return (yield from combinations)
+        for combination in combinations:
+            if self._is_combination_published(combination):
+                yield combination
         return _("There are no remaining possible combination.")
+
+    def _get_attribute_exclusions(self, parent_combination=None, parent_name=None, combination_ids=None):
+        """En la web, las combinaciones de variantes no publicadas se marcan como
+        no disponibles (igual que las archivadas), para que el JS de la ficha no
+        permita seleccionarlas en productos con varios atributos."""
+        res = super()._get_attribute_exclusions(
+            parent_combination=parent_combination, parent_name=parent_name, combination_ids=combination_ids)
+        if self._website_filters_unpublished_variants():
+            unpublished = self.product_variant_ids.filtered(lambda p: not p.is_published)
+            if unpublished:
+                archived = {tuple(c) for c in res.get('archived_combinations', [])}
+                archived |= {
+                    tuple(p.product_template_attribute_value_ids.ids)
+                    for p in unpublished if p.product_template_attribute_value_ids
+                }
+                res['archived_combinations'] = [list(c) for c in archived]
+        return res
 
 
     def _get_combination_info(self, combination=False, product_id=False, add_qty=1.0, uom_id=False, only_template=False,):
@@ -264,34 +284,30 @@ class ProductTemplate(models.Model):
        self.env['user.open.pack'].sudo().search( [('user_id','=', user_id)]).unlink()
 
     # ------------------------------------------------------------------
-    # Web: solo se muestran las variantes con stock
+    # Web: solo se muestran las variantes publicadas
     # ------------------------------------------------------------------
 
     def _get_website_visible_variants(self):
         """Variantes que se muestran en la web (círculos de color de la tienda y
-        selector de variantes de la ficha): las que tienen stock disponible.
-
-        - Usuarios internos: ven todas las variantes (como antes en Odoo 17).
-        - Productos no almacenables (sin control de stock): todas las variantes.
-        - Si ninguna variante tiene stock se muestran todas, para que el producto
-          siga pudiéndose seleccionar.
-        """
+        selector de variantes de la ficha): las que tienen marcado
+        "Publicado" en la propia variante (product.product.is_published).
+        Los usuarios internos ven todas (como en Odoo 17)."""
         self.ensure_one()
-        variants = self.product_variant_ids
-        if self.env.user._is_internal() or not self.sudo().is_storable:
-            return variants
-        in_stock_ids = set(variants.sudo().filtered(lambda p: p.qty_available > 0).ids)
-        return variants.filtered(lambda p: p.id in in_stock_ids) or variants
+        if self.env.user._is_internal():
+            return self.product_variant_ids
+        return self.product_variant_ids.filtered('is_published')
 
     def _filter_website_visible_ptavs(self, ptavs):
         """Quita del selector de la ficha los valores de atributo cuyas variantes
-        no se muestran en la web (ver _get_website_visible_variants).
-        Solo afecta a atributos que crean variantes siempre; los atributos sin
-        variante o dinámicos se dejan como están."""
+        no están publicadas. Solo afecta a atributos que crean variantes siempre;
+        los atributos sin variante o dinámicos se dejan como están.
+        Si un atributo se quedara sin ningún valor, se mantienen todos para no
+        dejar la ficha sin opciones (producto publicado sin variantes publicadas)."""
         self.ensure_one()
         if not ptavs.filtered(lambda ptav: ptav.attribute_id.create_variant == 'always'):
             return ptavs
         visible_ptavs = self._get_website_visible_variants().product_template_attribute_value_ids
-        return ptavs.filtered(
+        filtered = ptavs.filtered(
             lambda ptav: ptav.attribute_id.create_variant != 'always' or ptav in visible_ptavs
         )
+        return filtered or ptavs

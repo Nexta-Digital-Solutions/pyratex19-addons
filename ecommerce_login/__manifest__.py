@@ -14,12 +14,13 @@
     'website': "https://nextads.es/",
 
     'category': 'Ecommerce',
-    'version': '19.0.1.1',
+    'version': '19.0.1.2',
     'license': 'LGPL-3',
 
     'depends': [
-        'base', 
-        'website', 
+        'base',
+        'auth_signup',
+        'website',
         'website_sale',
         'documents',
         'documents_account'
@@ -47,5 +48,5 @@
             'ecommerce_login/static/src/scss/loader.scss',
         ],
     },
-    # 'post_init_hook': 'post_init_hook'
+    'post_init_hook': 'post_init_hook',
 }
