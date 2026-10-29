@@ -26,3 +26,39 @@ body {
  .swatches-color-btn {
     background-color: grey ! important;
  }
+
+/* ------------------------------------------------------------------
+   Pyratex: no se usa rojo como color de texto. Enlaces de texto en gris
+   (migas de pan, "Remove", "Continue shopping", enlaces del carrito...).
+   ------------------------------------------------------------------ */
+#wrapwrap .breadcrumb a,
+#wrapwrap .breadcrumb-item a,
+#wrapwrap a.js_delete_product,
+#wrapwrap .o_cart_product a:not(.btn),
+#wrapwrap a[href="/shop"]:not(.btn),
+#wrapwrap .o_portal_wrap a:not(.btn) {
+    color: #6c757d !important;
+}
+#wrapwrap .breadcrumb a:hover,
+#wrapwrap .breadcrumb-item a:hover,
+#wrapwrap a.js_delete_product:hover,
+#wrapwrap .o_cart_product a:not(.btn):hover,
+#wrapwrap a[href="/shop"]:not(.btn):hover,
+#wrapwrap .o_portal_wrap a:not(.btn):hover {
+    color: #343a40 !important;
+}
+
+/* Carrito: alinear el nombre del producto con la variante ("- ST White") */
+.o_cart_product .d-md-flex.flex-md-wrap {
+    align-items: baseline !important;
+}
+.o_cart_product .d-md-flex.flex-md-wrap h6,
+.o_cart_product .d-md-flex.flex-md-wrap .h6 {
+    margin-bottom: 0 !important;
+    line-height: 1.5;
+}
+.o_cart_product .d-md-flex.flex-md-wrap .d-inline-flex {
+    align-items: baseline !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}

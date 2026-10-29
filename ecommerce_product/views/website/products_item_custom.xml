@@ -26,11 +26,12 @@
         <xpath expr="//div[hasclass('product_price')]" position="replace">
             <!--Muestra los colores del producto-->
             <div style="display:flex; flex-wrap:wrap; ">
-                <t t-foreach="product.product_variant_ids" t-as="variant">
+                <!-- Solo variantes con stock (ver product.template._get_website_visible_variants) -->
+                <t t-foreach="product._get_website_visible_variants()" t-as="variant">
                     <!-- Solo el primer valor con color: si la variante tiene varios valores,
                          leer html_color sobre todos daba "Expected singleton" -->
                     <t t-set="color_ptav" t-value="variant.product_template_attribute_value_ids.filtered('html_color')[:1]"/>
-                    <div t-if="variant.is_published and color_ptav">
+                    <div t-if="color_ptav">
                         <label t-attf-style="background-color:#{color_ptav.html_color}" t-attf-class="css_attribute_color">
                             <input type="radio"/>
                         </label>
