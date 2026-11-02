@@ -32,9 +32,6 @@ class SaleOrder(models.Model):
             values["x_studio_type_of_order"] = "e-shop Stock"
         return values
 
-    def _get_delivery_methods(self):
-        return self.env['delivery.carrier'].sudo().search([('website_published', '=', True)])
-
     # ------------------------------------------------------------------
     # Carrito web (Odoo 19): al quitar un pack, quitar también sus muestras
     # ------------------------------------------------------------------
