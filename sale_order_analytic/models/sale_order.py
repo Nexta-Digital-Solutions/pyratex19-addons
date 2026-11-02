@@ -5,32 +5,46 @@ from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 from odoo.tools import float_compare
 
+import logging
+
 from odoo import api, fields, models, SUPERUSER_ID, _
-from odoo.addons.stock.models.stock_rule import ProcurementException
 from odoo.tools import groupby
+
+_logger = logging.getLogger(__name__)
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     def action_confirm(self):
-        res = super(SaleOrder, self).action_confirm()
-        for line in self.order_line:
-            if not line.analytic_distribution:
-                company_id = self.company_id
-                plan_id = self.env['account.analytic.plan'].search([('name','ilike', 'Default')])
-                if not plan_id:
-                    plan_id = self.env['account.analytic.plan'].search(
-                        [('name', 'ilike', 'Default')])
-                new_analytic_account_id = self.env['account.analytic.account'].create({
-                    'name': self.name,
-                    'partner_id': self.partner_id.id if self.partner_id else False,
-                    'plan_id': plan_id[0].id if plan_id else False,
-                })
-                if bool(new_analytic_account_id):
-                    for line in self.order_line:
-                        line.update({
-                            'analytic_distribution': {
-                                new_analytic_account_id.id: 100,
-                            },
-                        })
+        res = super().action_confirm()
+        # Un fallo al crear la cuenta analítica no debe impedir la confirmación del pedido
+        # (en el pago web el error se traga y el pedido quedaba sin confirmar).
+        for order in self:
+            try:
+                with self.env.cr.savepoint():
+                    order._set_analytic_account_on_lines()
+            except Exception:
+                _logger.exception(
+                    "No se pudo crear la cuenta analítica del pedido %s", order.name)
         return res
+
+    def _set_analytic_account_on_lines(self):
+        self.ensure_one()
+        lines = self.order_line.filtered(lambda l: not l.analytic_distribution)
+        if not lines:
+            return
+        plan = self.env['account.analytic.plan'].sudo().search(
+            [('name', 'ilike', 'Default')], limit=1)
+        if not plan:
+            plan = self.env['account.analytic.plan'].sudo().search([], limit=1)
+        if not plan:
+            _logger.warning("No hay plan analítico: pedido %s sin cuenta analítica", self.name)
+            return
+        account = self.env['account.analytic.account'].sudo().create({
+            'name': self.name,
+            'partner_id': self.partner_id.id,
+            'plan_id': plan.id,
+            'company_id': self.company_id.id,
+        })
+        lines.write({'analytic_distribution': {str(account.id): 100}})

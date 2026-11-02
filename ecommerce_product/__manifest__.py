@@ -43,6 +43,7 @@
         'views/odoo/user_open_pack_view.xml',
         'views/odoo/open_pack_view.xml',
         'views/odoo/menuitem_product.xml',
+        'views/odoo/res_partner_skip_payment.xml',
         'views/website/product_custom.xml',
         # 'views/website/attributes_filter_view.xml',
         'views/website/footer_custom_custom.xml',
