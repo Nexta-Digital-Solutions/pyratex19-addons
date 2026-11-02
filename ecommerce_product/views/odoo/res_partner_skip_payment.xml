@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_partner_skip_website_checkout_payment" model="ir.ui.view">
+        <field name="name">res.partner.skip.website.checkout.payment</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="skip_website_checkout_payment"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
