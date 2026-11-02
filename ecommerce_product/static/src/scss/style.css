@@ -28,23 +28,20 @@ body {
  }
 
 /* ------------------------------------------------------------------
-   Pyratex: no se usa rojo como color de texto. Enlaces de texto en gris
-   (migas de pan, "Remove", "Continue shopping", enlaces del carrito...).
+   Pyratex: no se usa rojo como color de texto. Todos los enlaces de la web
+   (<a>) en gris, salvo los botones (.btn), que mantienen su propio estilo.
    ------------------------------------------------------------------ */
-#wrapwrap .breadcrumb a,
-#wrapwrap .breadcrumb-item a,
-#wrapwrap a.js_delete_product,
-#wrapwrap .o_cart_product a:not(.btn),
-#wrapwrap a[href="/shop"]:not(.btn),
-#wrapwrap .o_portal_wrap a:not(.btn) {
+#wrapwrap {
+    --bs-link-color: #6c757d;
+    --bs-link-color-rgb: 108, 117, 125;
+    --bs-link-hover-color: #343a40;
+    --bs-link-hover-color-rgb: 52, 58, 64;
+}
+#wrapwrap a:not(.btn) {
     color: #6c757d !important;
 }
-#wrapwrap .breadcrumb a:hover,
-#wrapwrap .breadcrumb-item a:hover,
-#wrapwrap a.js_delete_product:hover,
-#wrapwrap .o_cart_product a:not(.btn):hover,
-#wrapwrap a[href="/shop"]:not(.btn):hover,
-#wrapwrap .o_portal_wrap a:not(.btn):hover {
+#wrapwrap a:not(.btn):hover,
+#wrapwrap a:not(.btn):focus {
     color: #343a40 !important;
 }
 
@@ -61,18 +58,6 @@ body {
     align-items: baseline !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
-}
-
-/* Pantallas de acceso (login, registro, restablecer contraseña): enlaces en gris */
-#wrapwrap .oe_login_form a:not(.btn),
-#wrapwrap .oe_signup_form a:not(.btn),
-#wrapwrap .oe_reset_password_form a:not(.btn) {
-    color: #6c757d !important;
-}
-#wrapwrap .oe_login_form a:not(.btn):hover,
-#wrapwrap .oe_signup_form a:not(.btn):hover,
-#wrapwrap .oe_reset_password_form a:not(.btn):hover {
-    color: #343a40 !important;
 }
 
 /* Ficha de producto: no se muestra el segundo precio (precio por unidad, p. ej. "24.00 € / m").
