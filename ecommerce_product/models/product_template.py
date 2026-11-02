@@ -86,6 +86,11 @@ class ProductTemplate(models.Model):
             combination=combination, product_id=product_id, add_qty=add_qty,uom_id=uom_id, only_template=only_template)
 
         product = self.env['product.product'].sudo().browse(combination_info['product_id']) or self
+        # _get_tax_included_unit_price solo existe en product.product: si no hay variante
+        # (p. ej. only_template=True en los bloques de productos alternativos) se usa
+        # la primera variante de la plantilla. En sudo, porque el producto puede tener
+        # impuestos de otras compañías a las que el usuario no tiene acceso.
+        tax_product = (product if product._name == 'product.product' else product.product_variant_id).sudo()
         qty_available = product.qty_available or 0
         virtual_available = product.virtual_available or 0
         
@@ -114,40 +119,43 @@ class ProductTemplate(models.Model):
         #price = combination_info['price'] *  tax
         #combination_info.update (price = price)    
 
-        if self.env.context.get('website_id'):
+        if self.env.context.get('website_id') and tax_product:
             partner = self.env.user.partner_id
             company_id = current_website.company_id
             fiscal_position = self.env['account.fiscal.position']._get_fiscal_position(partner=partner)
             product_taxes = product.sudo().taxes_id.filtered(lambda x: x.company_id == company_id)
             taxes = fiscal_position.map_tax(product_taxes)
 
-            price = product._get_tax_included_unit_price(
+            price = tax_product._get_tax_included_unit_price(
                 company_id,
                 company_id.currency_id,
                 fields.Date.today(),
                 'sale',
                 fiscal_position=fiscal_position,
+                product_taxes=product_taxes,
                 product_price_unit=combination_info.get('price'),
                 product_currency=company_id.currency_id
             )
 
 
-            list_price = product._get_tax_included_unit_price(
+            list_price = tax_product._get_tax_included_unit_price(
                 company_id,
                 company_id.currency_id,
                 fields.Date.today(),
                 'sale',
                 fiscal_position=fiscal_position,
+                product_taxes=product_taxes,
                 product_price_unit=combination_info.get('list_price'),
                 product_currency=company_id.currency_id
             )
 
-            price_extra = product._get_tax_included_unit_price(
+            price_extra = tax_product._get_tax_included_unit_price(
                     company_id,
                     company_id.currency_id,
                     fields.Date.today(),
                     'sale',
                     fiscal_position=fiscal_position,
+                    product_taxes=product_taxes,
                     product_price_unit=combination_info.get('price_extra'),
                     product_currency=company_id.currency_id
                 )
