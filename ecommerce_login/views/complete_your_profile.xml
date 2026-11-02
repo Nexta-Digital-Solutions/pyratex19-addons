@@ -63,7 +63,7 @@
                                 <t t-set="professions"
                                    t-value="['individual', 'student', 'company', 'library', 'project']"/>
                                 <select class="form-select css_attribute_select mb-2" name="profession">
-                                    <option value="" selected="selected">I'm</option>
+                                    <option value="" selected="selected">Tell us who you are</option>
                                     <t t-foreach="professions" t-as="profession">
                                         <option t-att-value="profession"
                                                 t-esc="{'individual': 'An Individual', 'student': 'A Student', 'company': 'A Company', 'library': 'A Material Library', 'project': 'Starting a new project'}[profession]"/>
@@ -76,7 +76,7 @@
                                    t-value="['engine', 'instagram', 'linkedin', 'word', 'events', 'newspaper', 'other']"/>
                                 <select class="form-select css_attribute_select mb-2" name="about_us"
                                         id="about_us_select">
-                                    <option value="" selected="selected">About Us</option>
+                                     <option value="" selected="selected">How did you hear about us?</option>
                                     <t t-foreach="about_us_options" t-as="option">
                                         <option t-att-value="option"
                                                 t-esc="{'engine': 'Search engine', 'instagram': 'Instagram', 'linkedin': 'Linkedin', 'word': 'Word of Mouth', 'events': 'Events', 'newspaper': 'Newspaper/Press', 'other': 'Other'}[option]"/>

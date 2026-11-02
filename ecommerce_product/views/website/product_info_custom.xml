@@ -43,12 +43,15 @@
                         <div style="width: 50%;">
                             <ul t-if="product.property_id" style="list-style: none;" class="ps-0">
                                 <li><strong>Properties</strong></li>
-                                <div class="d-flex flex-wrap align-items-start">
+                                <!-- Cada propiedad en su línea: el icono delante del texto -->
+                                <div class="d-flex flex-column">
                                     <t t-foreach="product.property_id" t-as="property">
-                                        <img t-if="property.image" t-att-src="image_data_uri(property.image)"
-                                             t-att-alt="property.name"
-                                             style="width: 5%; height: auto; max-height: 40px; object-fit: contain;"/>
-                                        <p t-field="property.name" class="p-1"/>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <img t-if="property.image" t-att-src="image_data_uri(property.image)"
+                                                 t-att-alt="property.name" class="me-2 flex-shrink-0"
+                                                 style="width: 18px; height: 18px; object-fit: contain;"/>
+                                            <span t-field="property.name"/>
+                                        </div>
                                     </t>
                                 </div>
                             </ul>
@@ -81,8 +84,8 @@
                         <span t-field="product.country_id"/>
                     </h5>
 
-                    <!-- Productos sin precio (muestras): el precio está oculto, pero se indica igualmente el IVA -->
-                    <p t-if="not combination_info['price']" class="mt-2 mb-0">Not including 21% VAT</p>
+                    <!-- Productos sin precio: el precio está oculto, pero se indica el IVA (no en las muestras / Swatches) -->
+                    <p t-if="not combination_info['price'] and product.producttype_id.name != 'Swatches'" class="mt-2 mb-0">Not including 21% VAT</p>
                 </div>
             </t>
             <div t-else="" class="o_wsale_product_details_content_section mb-4">

@@ -74,3 +74,9 @@ body {
 #wrapwrap .oe_reset_password_form a:not(.btn):hover {
     color: #343a40 !important;
 }
+
+/* Ficha de producto: no se muestra el segundo precio (precio por unidad, p. ej. "24.00 € / m").
+   Se oculta con CSS porque el JS de Odoo lo vuelve a mostrar al cambiar de variante. */
+.o_wsale_product_page .o_base_unit_price_wrapper {
+    display: none !important;
+}
