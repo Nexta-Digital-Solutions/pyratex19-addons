@@ -82,6 +82,12 @@ class SaleOrder(models.Model):
 
         return SaleOrderLine
 
+    def _get_update_prices_lines(self):
+        """Las líneas con precio fijado por el Open Pack (pack y muestras) no se
+        recalculan cuando Odoo actualiza los precios del pedido (por ejemplo, al
+        elegir la dirección o el envío en el checkout)."""
+        return super()._get_update_prices_lines().filtered(lambda line: not line.pyratex_price_locked)
+
     def _prepare_invoice(self):
         """Diario y tipo de factura según el tipo de pedido e-shop.
 
