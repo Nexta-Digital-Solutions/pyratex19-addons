@@ -65,3 +65,28 @@ body {
 .o_wsale_product_page .o_base_unit_price_wrapper {
     display: none !important;
 }
+
+/* Tienda: bolitas de color a la izquierda y precio en la misma línea.
+   Odoo 19 da al precio flex-basis 100% y por eso saltaba debajo de las bolitas. */
+.oe_product_cart .o_wsale_product_sub.pyratex_dots_price {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+.oe_product_cart .o_wsale_product_sub.pyratex_dots_price > .pyratex_color_dots {
+    flex: 1 1 auto !important;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: .25rem;
+}
+.oe_product_cart .o_wsale_product_sub.pyratex_dots_price > .pyratex_color_dots > div {
+    flex: 0 0 auto;
+}
+.oe_product_cart .o_wsale_product_sub.pyratex_dots_price > .product_price {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    white-space: nowrap;
+    margin-left: auto;
+    text-align: end;
+}
