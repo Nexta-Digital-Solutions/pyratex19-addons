@@ -1,7 +1,9 @@
 <odoo>
     <template id="products_item_custom" inherit_id="website_sale.products_item">
         <xpath expr ="//form/div[2]/div[2][hasclass('o_wsale_product_sub')]" position = "attributes">
-            <attribute name="class" add="flex-column" separator=" "></attribute>
+            <!-- Bolitas de color a la izquierda y precio en la misma línea, a la derecha
+                 (estilos en static/src/scss/style.css, clase pyratex_dots_price) -->
+            <attribute name="class" add="pyratex_dots_price" separator=" "></attribute>
         </xpath>
         <!-- Odoo 19: el bloque de texto está ahora dentro de o_wsale_product_info_attributes_wrapper -->
         <xpath expr="//div[hasclass('o_wsale_product_information_text')]" position="replace">
@@ -25,7 +27,7 @@
 
         <xpath expr="//div[hasclass('product_price')]" position="replace">
             <!--Muestra los colores del producto-->
-            <div style="display:flex; flex-wrap:wrap; ">
+            <div class="d-flex flex-wrap justify-content-start pyratex_color_dots">
                 <!-- Solo variantes publicadas (campo is_published de la variante, ver product.template._get_website_visible_variants) -->
                 <t t-foreach="product._get_website_visible_variants()" t-as="variant">
                     <!-- Solo el primer valor con color: si la variante tiene varios valores,

@@ -71,9 +71,14 @@ class OpenPackCart(http.Controller):
             values = cart._cart_add(product_id=product.id, quantity=1)
             line = order_sudo.order_line.filtered(lambda sol: sol.id == values.get('line_id'))
             if line:
-                # En Odoo 19 un price_unit distinto de technical_price_unit se
-                # considera precio manual y no se recalcula automáticamente.
-                line.price_unit = price_unit
+                # Precio fijado: no se recalcula aunque Odoo actualice los precios
+                # del pedido en el checkout (ver sale.order._get_update_prices_lines
+                # y sale.order.line._reset_price_unit).
+                line.write({
+                    'price_unit': price_unit,
+                    'technical_price_unit': price_unit,
+                    'pyratex_price_locked': True,
+                })
 
         order_sudo._verify_cart_after_update()
 

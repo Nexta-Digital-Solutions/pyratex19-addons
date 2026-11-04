@@ -5,9 +5,18 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     check_price = fields.Boolean(string = "Check Price", help = "To check price for 25% increment to fabrics product")
+    # Precio fijado desde la web (Open Pack y sus muestras): Odoo no debe recalcularlo
+    # cuando el checkout recalcula los precios del pedido (dirección, envío...).
+    pyratex_price_locked = fields.Boolean(
+        string="Fixed Price (Open Pack)", copy=False,
+        help="Price set by the Open Pack on the website; it is not recomputed from the product price.")
 
     def _reset_price_unit(self):
         self.ensure_one()
+        if self.pyratex_price_locked:
+            # Se conserva el precio del pack (o 0 € de sus muestras)
+            self.technical_price_unit = self.price_unit
+            return
 
         line = self.with_company(self.company_id)
         price = line._get_display_price()

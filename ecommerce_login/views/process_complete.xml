@@ -12,13 +12,9 @@
                           </div>
                           <div class="modal-body">
                             <div class="col-sd-6">
-                              <div class = "message">
-                                <span>
-                                your registration has been successful
-                                </span>
-                              </div>
-                              <div class = "tranks">
-                                <span>thank you</span>
+                              <div class="message">
+                                <p class="fw-bold mb-2">You have successfully registered your account.</p>
+                                <p class="mb-0">There's one step left to start shopping. Please go to your inbox, confirm your email address by clicking on the link and create a password.</p>
                               </div>
                             </div>
                           </div>
