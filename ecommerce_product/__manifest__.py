@@ -20,7 +20,9 @@
                 'stock','barcodes', 'web_studio', 'mrp',
                 'account_accountant',
                 'sale_product_pack', 'uom', 'website_payment', 'mrp_subcontracting', 'portal',
-                'auth_signup'],
+                'auth_signup',
+                # Odoo 19: Factura-e solo para clientes con NIF (models/account_move_send.py)
+                'l10n_es_edi_facturae'],
 
     'data': [
         'security/ir.model.access.csv',

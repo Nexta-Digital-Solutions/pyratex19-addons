@@ -1,2 +1,3 @@
 from . import product_template,product_attribute_value,fiber_family,properties,usage,product_type,structure,color_group,care_instructions,certification,product_template_attribute_line,available_meters,composition,product_product,open_pack,user_open_pack,sale_order,sale_order_line
 from . import skip_payment
+from . import account_move_send
