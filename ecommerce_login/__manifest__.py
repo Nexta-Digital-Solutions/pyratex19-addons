@@ -23,7 +23,9 @@
         'website',
         'website_sale',
         'documents',
-        'documents_account'
+        'documents_account',
+        # Odoo 19: se sobrescribe el controlador del portal de l10n_es (NIF opcional)
+        'l10n_es',
     ],
     'external_dependencies': {
         'python': ['python-docx', 'docxtpl'],
