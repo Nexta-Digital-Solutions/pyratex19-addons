@@ -162,11 +162,31 @@ class AuthSignupHomeMnda(AuthSignupHome):
             values['user_id'] = salesperson.id
 
         partner = Partner.create(values)
-        fiscal_position = request.env['account.fiscal.position'].sudo().search(
-            [('name', '=', 'EU privado')], limit=1)
-        if fiscal_position:
-            partner.property_account_position_id = fiscal_position
+        # Posición fiscal: se pone en la empresa (es un campo "comercial" que Odoo
+        # copia a sus contactos; puesto solo en el contacto se perdía).
+        fiscal_position = self._get_signup_fiscal_position()
+        if fiscal_position and not company.property_account_position_id:
+            company.property_account_position_id = fiscal_position
         return partner
+
+    def _get_signup_fiscal_position(self):
+        """Posición fiscal "EU privado" / "EU private" (l10n_es).
+
+        En Odoo 19 el nombre es traducible y en la base de datos aparece como
+        "EU private", por lo que buscar solo "EU privado" no encontraba nada.
+        """
+        FiscalPosition = request.env['account.fiscal.position'].sudo()
+        company_id = request.website.company_id.id or request.env.company.id
+        fiscal_position = request.env.ref(
+            'account.%s_fp_intra_private' % company_id, raise_if_not_found=False)
+        if fiscal_position:
+            return fiscal_position.sudo()
+        domain = [('name', 'in', ['EU privado', 'EU private']), ('company_id', 'in', [company_id, False])]
+        for lang in ('es_ES', 'en_US'):
+            fiscal_position = FiscalPosition.with_context(lang=lang).search(domain, limit=1)
+            if fiscal_position:
+                return fiscal_position
+        return FiscalPosition
 
     def createInvoiceDLNA(self, data, company, partner):
         if not data.get('invoice_name'):
